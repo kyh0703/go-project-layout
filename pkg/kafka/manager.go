@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/kyh0703/go-project-layoutinternal/domain/vo/event"
-	"github.com/kyh0703/go-project-layoutpkg/eventhandler"
+	"github.com/kyh0703/go-project-layout/internal/domain/vo/event"
+	"github.com/kyh0703/go-project-layout/pkg/eventhandler"
 	"gitlab.com/ipron-core/call/configs"
 	"gitlab.com/ipron-ne/iCore/ilog"
 	"gitlab.com/ipron-ne/ievent"
@@ -20,7 +20,6 @@ import (
 )
 
 type Manager struct {
-	log         ilog.Log
 	lock        sync.RWMutex
 	wg          sync.WaitGroup
 	ctx         context.Context

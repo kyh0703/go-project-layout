@@ -1,8 +1,8 @@
 package broker
 
 import (
-	"github.com/kyh0703/go-project-layoutinternal/domain/vo/event"
-	"github.com/kyh0703/go-project-layoutpkg/kafka"
+	"github.com/kyh0703/go-project-layout/internal/domain/vo/event"
+	"github.com/kyh0703/go-project-layout/pkg/kafka"
 )
 
 type KafkaBroker struct {

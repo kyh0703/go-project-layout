@@ -10,9 +10,9 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/kyh0703/go-project-layout/configs"
-	"github.com/kyh0703/go-project-layoutinternal/adaptor/rpc"
-	"github.com/kyh0703/go-project-layoutinternal/app/common"
-	"github.com/kyh0703/go-project-layoutpkg/cache"
+	"github.com/kyh0703/go-project-layout/internal/adaptor/rpc"
+	"github.com/kyh0703/go-project-layout/internal/app/common"
+	"github.com/kyh0703/go-project-layout/pkg/cache"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gitlab.com/ipron-ne/iCore/ilog"
 	"gitlab.com/ipron-ne/iCore/otrace"
@@ -22,7 +22,7 @@ import (
 	callpb "gitlab.com/ipron-ne/grpc-idl/gen/go/call"
 	probe "gitlab.com/ipron-ne/iCore/k8s-probe"
 	platform_server "gitlab.com/ipron-ne/iproncloud-platform-server/v2"
-	lgrpc "module github.com/kyh0703/go-project-layoutpkg/grpc"
+	lgrpc "module github.com/kyh0703/go-project-layout/pkg/grpc"
 )
 
 type App struct {
