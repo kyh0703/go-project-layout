@@ -8,7 +8,6 @@ import (
 	"github.com/IBM/sarama"
 	"github.com/cloudevents/sdk-go/protocol/kafka_sarama/v2"
 	"github.com/pkg/errors"
-	"gitlab.com/ipron-core/call/configs"
 
 	cloud "github.com/cloudevents/sdk-go/v2"
 )
@@ -60,7 +59,7 @@ func (c *Consumer) Connect(brokers []string) error {
 	receiver, err := kafka_sarama.NewConsumer(
 		brokers,
 		c.config,
-		configs.Env.PodName,
+		"my_app",
 		c.topic,
 	)
 	if err != nil {

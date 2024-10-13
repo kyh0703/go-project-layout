@@ -6,12 +6,8 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/pkg/errors"
-	"gitlab.com/ipron-ne/ievent"
 
 	cloud "github.com/cloudevents/sdk-go/v2"
-	callevt "gitlab.com/ipron-ne/ievent/call"
-	mediaevt "gitlab.com/ipron-ne/ievent/media"
-	sipevt "gitlab.com/ipron-ne/ievent/sip"
 )
 
 const (
@@ -126,114 +122,6 @@ func (h *Handler) ProcEvent(ctx context.Context, event cloud.Event) error {
 		return nil
 	}
 	switch event.Type() {
-	case ievent.CloudTypeCallTerminated:
-		if h.onCallTerminate == nil {
-			return nil
-		}
-		return h.onCallTerminate(ctx, event, h.done)
-	case ievent.CloudTypeCallDisconnected:
-		if h.onCallDisconncet == nil {
-			return nil
-		}
-		var data callevt.Disconnected
-		event.DataAs(&data)
-		if data.EventEndPointID != data.EndPointID {
-			return nil
-		}
-		if !h.IfInExpects(data.EventEndPointID) {
-			return nil
-		}
-		return h.onCallDisconncet(ctx, event, h.done)
-	case ievent.CloudTypeSipAlerted:
-		if h.onSipAlert == nil {
-			return nil
-		}
-		var data sipevt.Alerted
-		event.DataAs(&data)
-		if !h.IfInExpects(data.ConnectionID) {
-			return nil
-		}
-		return h.onSipAlert(ctx, event, h.done)
-	case ievent.CloudTypeSipConnected:
-		if h.onSipConnect == nil {
-			return nil
-		}
-		var data sipevt.Connected
-		event.DataAs(&data)
-		if !h.IfInExpects(data.ConnectionID) {
-			return nil
-		}
-		return h.onSipConnect(ctx, event, h.done)
-	case ievent.CloudTypeSipHeld:
-		if h.onSipHeld == nil {
-			return nil
-		}
-		var data sipevt.Held
-		event.DataAs(&data)
-		if !h.IfInExpects(data.ConnectionID) {
-			return nil
-		}
-		return h.onSipHeld(ctx, event, h.done)
-	case ievent.CloudTypeSipRetrieved:
-		if h.onSipRetrieve == nil {
-			return nil
-		}
-		var data sipevt.Retrieved
-		event.DataAs(&data)
-		if !h.IfInExpects(data.ConnectionID) {
-			return nil
-		}
-		return h.onSipRetrieve(ctx, event, h.done)
-	case ievent.CloudTypeSipReleased:
-		if h.onSipRelease == nil {
-			return nil
-		}
-		var data sipevt.Released
-		event.DataAs(&data)
-		if !h.IfInExpects(data.ConnectionID) {
-			return nil
-		}
-		return h.onSipRelease(ctx, event, h.done)
-	case ievent.CloudTypeSipTransferred:
-		if h.onSipTransfer == nil {
-			return nil
-		}
-		var data sipevt.Transferred
-		event.DataAs(&data)
-		if !h.IfInExpects(data.ConnectionID) {
-			return nil
-		}
-		return h.onSipTransfer(ctx, event, h.done)
-	case ievent.CloudTypeSipJoined:
-		if h.onSipJoin == nil {
-			return nil
-		}
-		var data sipevt.Joined
-		event.DataAs(&data)
-		if !h.IfInExpects(data.ConnectionID) {
-			return nil
-		}
-		return h.onSipJoin(ctx, event, h.done)
-	case ievent.CloudTypeSipConfSwitched:
-		if h.onSipSwitch == nil {
-			return nil
-		}
-		var data sipevt.ConfSwitched
-		event.DataAs(&data)
-		if !h.IfInExpects(data.ConnectionID) {
-			return nil
-		}
-		return h.onSipSwitch(ctx, event, h.done)
-	case ievent.CloudTypeMediaPlayDone:
-		if h.onMediaPlaydone == nil {
-			return nil
-		}
-		var data mediaevt.PlayDone
-		event.DataAs(&data)
-		if !h.IfInExpects(data.ConnectionID) {
-			return nil
-		}
-		return h.onMediaPlaydone(ctx, event, h.done)
 	default:
 		return nil
 	}

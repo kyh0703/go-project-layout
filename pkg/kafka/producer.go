@@ -8,7 +8,6 @@ import (
 	"github.com/IBM/sarama"
 	"github.com/cloudevents/sdk-go/protocol/kafka_sarama/v2"
 	"github.com/pkg/errors"
-	"gitlab.com/ipron-ne/iCore/ilog"
 
 	cloud "github.com/cloudevents/sdk-go/v2"
 )
@@ -95,7 +94,6 @@ func (p *Producer) run() {
 			ctx := p.setMessageKey(p.ctx, callID)
 			result := p.client.Send(ctx, event)
 			if cloud.IsUndelivered(result) {
-				ilog.Error("failed to send kafka event: %v", result)
 			}
 		}
 	}

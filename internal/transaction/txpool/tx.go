@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/kyh0703/go-project-layout/configs"
-	"github.com/kyh0703/go-project-layout/internal/app/transaction/dto"
+	"github.com/kyh0703/go-project-layout/internal/transaction/dto"
 )
 
 // Transaction is an call transaction.

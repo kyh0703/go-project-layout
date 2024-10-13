@@ -3,20 +3,15 @@ package kafka
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/kyh0703/go-project-layout/internal/domain/vo/event"
 	"github.com/kyh0703/go-project-layout/pkg/eventhandler"
-	"gitlab.com/ipron-core/call/configs"
-	"gitlab.com/ipron-ne/iCore/ilog"
-	"gitlab.com/ipron-ne/ievent"
 
 	cloud "github.com/cloudevents/sdk-go/v2"
-	callevt "gitlab.com/ipron-ne/ievent/call"
-	mediaevt "gitlab.com/ipron-ne/ievent/media"
-	sipevt "gitlab.com/ipron-ne/ievent/sip"
 )
 
 type Manager struct {
@@ -32,7 +27,6 @@ type Manager struct {
 func ProvideManager() *Manager {
 	ctx, cancel := context.WithCancel(context.Background())
 	manager := &Manager{
-		log:         ilog.NewLog("kafka-manager"),
 		ctx:         ctx,
 		cancel:      cancel,
 		subjectMap:  make(map[string]eventhandler.Subject),
@@ -45,7 +39,6 @@ func ProvideManager() *Manager {
 }
 
 func (m *Manager) InitLoop() {
-	m.log.Info("init kafka, broker: %v", configs.Env.KafkaBroker)
 reconnect_producer:
 	if err := m.initProducer(); err != nil {
 		time.Sleep(time.Second)
@@ -59,48 +52,29 @@ reconnect_consumer:
 }
 
 func (m *Manager) initConsumer() error {
-	m.log.Info("- init kafka consumer")
+	// call := NewConsumer(m.ctx, ievent.CloudTopicCall, m.Consume)
+	// if err := call.Connect(configs.Env.KafkaBroker); err != nil {
+	// 	call.Close()
+	// 	return err
+	// }
+	// media := NewConsumer(m.ctx, ievent.CloudTopicMedia, m.Consume)
+	// if err := media.Connect(configs.Env.KafkaBroker); err != nil {
+	// 	media.Close()
+	// 	return err
+	// }
+	// sip := NewConsumer(m.ctx, ievent.CloudTypeSip, m.Consume)
+	// if err := sip.Connect(configs.Env.KafkaBroker); err != nil {
+	// 	sip.Close()
+	// 	return err
+	// }
 
-	call := NewConsumer(m.ctx, ievent.CloudTopicCall, m.Consume)
-	if err := call.Connect(configs.Env.KafkaBroker); err != nil {
-		call.Close()
-		return err
-	}
-
-	media := NewConsumer(m.ctx, ievent.CloudTopicMedia, m.Consume)
-	if err := media.Connect(configs.Env.KafkaBroker); err != nil {
-		media.Close()
-		return err
-	}
-
-	sip := NewConsumer(m.ctx, ievent.CloudTypeSip, m.Consume)
-	if err := sip.Connect(configs.Env.KafkaBroker); err != nil {
-		sip.Close()
-		return err
-	}
-
-	m.registerConsumer(call)
-	m.registerConsumer(media)
-	m.registerConsumer(sip)
+	// m.registerConsumer(call)
+	// m.registerConsumer(media)
+	// m.registerConsumer(sip)
 	return nil
 }
 
 func (m *Manager) initProducer() error {
-	m.log.Info("- init kafka producer")
-	var (
-		call     = NewProducer(m.ctx, ievent.CloudTopicCall)
-		tracking = NewProducer(m.ctx, ievent.CloudTopicTracking)
-	)
-	if err := call.Connect(configs.Env.KafkaBroker); err != nil {
-		call.Close()
-		return err
-	}
-	if err := tracking.Connect(configs.Env.KafkaBroker); err != nil {
-		tracking.Close()
-		return err
-	}
-	m.registerProducer(call)
-	m.registerProducer(tracking)
 	return nil
 }
 
@@ -156,72 +130,6 @@ func (m *Manager) Deregister(id string, l eventhandler.Listener) {
 func (m *Manager) Consume(_ context.Context, ce cloud.Event) {
 	var callID string
 	switch ce.Type() {
-	case ievent.CloudTypeCallTerminated:
-		var data callevt.Terminated
-		if err := ce.DataAs(&data); err != nil {
-			return
-		}
-		callID = data.CallID
-	case ievent.CloudTypeCallDisconnected:
-		var data callevt.Disconnected
-		if err := ce.DataAs(&data); err != nil {
-			return
-		}
-		callID = data.CallID
-	case ievent.CloudTypeMediaPlayDone:
-		var data mediaevt.PlayDone
-		if err := ce.DataAs(&data); err != nil {
-			return
-		}
-		callID = data.CallID
-	case ievent.CloudTypeSipAlerted:
-		var data sipevt.Alerted
-		if err := ce.DataAs(&data); err != nil {
-			return
-		}
-		callID = data.CallID
-	case ievent.CloudTypeSipConnected:
-		var data sipevt.Connected
-		if err := ce.DataAs(&data); err != nil {
-			return
-		}
-		callID = data.CallID
-	case ievent.CloudTypeSipHeld:
-		var data sipevt.Held
-		if err := ce.DataAs(&data); err != nil {
-			return
-		}
-		callID = data.CallID
-	case ievent.CloudTypeSipRetrieved:
-		var data sipevt.Retrieved
-		if err := ce.DataAs(&data); err != nil {
-			return
-		}
-		callID = data.CallID
-	case ievent.CloudTypeSipReleased:
-		var data sipevt.Released
-		if err := ce.DataAs(&data); err != nil {
-			return
-		}
-		callID = data.CallID
-	case ievent.CloudTypeSipTransferred:
-		var data sipevt.Transferred
-		if err := ce.DataAs(&data); err != nil {
-			return
-		}
-		callID = data.CallID
-	case ievent.CloudTypeSipJoined:
-		var data sipevt.Joined
-		if err := ce.DataAs(&data); err != nil {
-			return
-		}
-		callID = data.CallID
-	case ievent.CloudTypeSipConfSwitched:
-		var data sipevt.ConfSwitched
-		if err := ce.DataAs(&data); err != nil {
-			return
-		}
-		callID = data.CallID
 	default:
 		return
 	}
@@ -241,8 +149,6 @@ func (m *Manager) Produce(events ...event.Event) {
 	for _, e := range events {
 		ce := cloud.NewEvent()
 		ce.SetID(uuid.New().String())
-		ce.SetSource(ievent.CloudSourceCallID)
-		ce.SetSpecVersion(ievent.CloudSpenV1)
 		ce.SetType(e.Type())
 		ce.SetSubject(e.Subject())
 		ce.SetExtension("eventsubject", e.EventSubject())
@@ -253,7 +159,6 @@ func (m *Manager) Produce(events ...event.Event) {
 		}
 		producer, ok := m.producerMap[e.Topic()]
 		if !ok {
-			m.log.Error("not found producer, topic: %v", e.Topic())
 			continue
 		}
 		producer.Send(ce)
@@ -288,15 +193,13 @@ func (m *Manager) print() {
 	if err != nil {
 		return
 	}
-
-	m.log.Info("%v", string(b))
+	log.Print(string(b))
 }
 
 // poll is a loop to poll the event from kafka.
 func (m *Manager) poll() {
 	m.wg.Add(1)
 	defer m.wg.Done()
-
 	for {
 		select {
 		case <-time.After(30 * time.Second):
