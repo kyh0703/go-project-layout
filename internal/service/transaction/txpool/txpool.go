@@ -5,23 +5,18 @@ import (
 	"sync"
 
 	"github.com/gofrs/uuid"
-	"github.com/kyh0703/go-project-layout/internal/adaptor/metric"
-	"github.com/kyh0703/go-project-layout/internal/transaction/dto"
+	"github.com/kyh0703/go-project-layout/internal/service/transaction/dto"
 )
 
 type TxPool struct {
-	metric     metric.Metric
 	txMap      map[uuid.UUID]*Tx
 	txCountMap map[string]int
 	wg         sync.WaitGroup
 	mutex      sync.RWMutex
 }
 
-func NewTxPool(
-	metric metric.Metric,
-) *TxPool {
+func NewTxPool() *TxPool {
 	return &TxPool{
-		metric:     metric,
 		txMap:      make(map[uuid.UUID]*Tx),
 		txCountMap: make(map[string]int),
 	}
@@ -38,10 +33,8 @@ func (pool *TxPool) PrintTx() {
 
 func (pool *TxPool) BeginTx(inner *dto.TxConfigDto) {
 	// create tx data.
-
 	pool.mutex.Lock()
 	defer pool.mutex.Unlock()
-
 	// compute tx type and count.
 	uuid, _ := uuid.NewV4()
 	pool.wg.Add(1)

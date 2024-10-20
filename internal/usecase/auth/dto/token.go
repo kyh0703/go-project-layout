@@ -1,8 +1,6 @@
 package dto
 
-type TokenDto struct {
-	UserID        int    `json:"userId"`
-	TokenType     string `json:"tokenType"`
+type Token struct {
 	AccessToken   string `json:"accessToken"`
 	AccessExpire  int64  `json:"accessExpire"`
 	RefreshToken  string `json:"refreshToken"`

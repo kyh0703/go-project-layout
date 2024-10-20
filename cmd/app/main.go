@@ -2,27 +2,38 @@ package main
 
 import (
 	"context"
+	"io"
+	"net/http"
+	"os"
 	"os/signal"
 	"syscall"
+	"time"
+
+	"github.com/rs/cors"
 )
 
 func main() {
-	// create context that listens for the interrupt signal from the OS
+	ctx := context.Background()
+	if err := run(ctx, os.Stdout, os.Args); err != nil {
+		os.Exit(1)
+	}
+}
+
+func run(ctx context.Context, _ io.Writer, _ []string) error {
 	ctx, stop := signal.NotifyContext(
-		context.Background(),
+		ctx,
 		syscall.SIGINT,
 		syscall.SIGTERM,
 	)
 	defer stop()
 
-	// start app
-	// a, err := (ctx)
-	// if err != nil {
-	// }
-	// defer a.Close()
+	mux := http.NewServeMux()
+	handler := cors.Default().Handler(mux)
+	http.ListenAndServe(":8080", handler)
 
-	// listen for the interrupt signal.
 	<-ctx.Done()
+	_, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 
-	stop()
+	return nil
 }
