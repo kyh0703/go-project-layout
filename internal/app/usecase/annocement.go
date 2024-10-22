@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/kyh0703/go-project-layout/internal/domain"
+	"github.com/kyh0703/go-project-layout/internal/app/domain"
 )
 
 type announcementUsecase struct{}

@@ -8,7 +8,7 @@ BUILD_BIN       = $(BUILD_DIR)/bin
 BUILD_PACKAGE   = $(BUILD_DIR)/package
 BUILD_REPORT    = $(BUILD_DIR)/report
 
-TARGET          = call
+TARGET          = app
 PRIVATE_REPO    = gitlab.com/ipron-ne,gitlab.com/ipron-core
 
 CI_USER         := $(if $(CI_USER),$(CI_USER),"gitlab-ci-token")
@@ -27,7 +27,13 @@ dep:
 build: dep
 	@echo "build:"
 	@GO_PRIVATE=$(PRIVATE_REPO) GO111MODULE=on CGO_ENABLED=0 \
-		$(GO) build -ldflags "$(LDFLAGS)" -o $(BUILD_BIN)/$(TARGET) .
+		$(GO) build -ldflags "$(LDFLAGS)" -o $(BUILD_BIN)/$(TARGET) ./cmd/app
+	@echo ""
+
+.PHONY: run
+run:
+	@echo "run:"
+	@$(BUILD_BIN)/$(TARGET)
 	@echo ""
 
 .PHONY: gen

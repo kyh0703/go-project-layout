@@ -23,3 +23,11 @@ call
 # Build
 build/bin/*
 build/report/*
+
+# Go
+vendor
+coverage.out
+test-report.json
+
+# Air
+.air

@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/gofrs/uuid"
-	"github.com/kyh0703/go-project-layout/internal/service/transaction/dto"
+	"github.com/kyh0703/go-project-layout/internal/app/service/transaction/dto"
 )
 
 type TxPool struct {

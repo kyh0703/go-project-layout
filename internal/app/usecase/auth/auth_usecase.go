@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"github.com/kyh0703/go-project-layout/internal/usecase/auth/dto"
+	"github.com/kyh0703/go-project-layout/internal/app/usecase/auth/dto"
 )
 
 type authUsecase struct{}

@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/kyh0703/go-project-layout/configs"
-	"github.com/kyh0703/go-project-layout/internal/service/transaction/dto"
+	"github.com/kyh0703/go-project-layout/internal/app/service/transaction/dto"
 )
 
 // Transaction is an call transaction.
@@ -15,18 +15,18 @@ type Tx struct {
 	time   time.Time
 	ctx    context.Context
 	cancel context.CancelFunc
-	expire time.Duration
+	cfg    *configs.Config
 }
 
-func NewTx(inner *dto.TxConfigDto) *Tx {
-	ctx, cancel := context.WithTimeout(context.Background(), configs.Env.TransactionTimeout)
+func NewTx(inner *dto.TxConfigDto, cfg *configs.Config) *Tx {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.App.TxTimeout))
 	id := uuid.NewString()
 	return &Tx{
 		id:     id,
 		time:   time.Now(),
 		ctx:    ctx,
 		cancel: cancel,
-		expire: configs.Env.TransactionTimeout,
+		cfg:    cfg,
 	}
 }
 

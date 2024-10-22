@@ -1,66 +1,26 @@
-# Options for analysis running.
+author:
+  - "kyh0703@nate.com"
+
 run:
-  go: '1.21'
   timeout: 5m
-  tests: false
-  skip-dirs-use-default: true
+  issues-exit-code: 2
+  tests: true
+  build-tags: []
+  skip-dirs: []
+  skip-dirs-use-default: false
+  skip-files: []
   allow-parallel-runners: true
-  skip-dirs:
-    - test
-
-
-linters:
-  # See the dedicated "linters" documentation section.
-  disable-all: true
-  enable:
-    - errcheck # bugs  : 검사되지 않은 오류를 확인
-    - gosimple # style : 코드 단순화 검사
-    - govet # bugs  : 코드를 검사하고 인수가 형식 문자열과 일치하지 않는 Printf 호출과 같은 의심스러운 구문
-    - ineffassign # refact : 기존 변수에 대한 할당이 사용되지 않을 때 감지
-    - bidichk # bugs  : 위험한 유니코드 문자 시퀀스 확인
-    - bodyclose # bugs  : HTTP 응답 본문이 성공적으로 닫혔는지 확인
-    - durationcheck # bugs  : 두 time.Duration값이 잘못된 방식으로 곱해지는 경우를 감지
-    - exportloopref # bugs : Loop 변수를 Loop 밖에서 참조 감지 ( i := i 추가 )
-    - reassign # bugs : 패키지 변수가 재할당되지 않았는지 확인
-    - rowserrcheck # bugs : sql.Rows.Err 체크를 하지는 검사
-    - revive # style : 이름규칙 등
-    - unused # refact : 사용되지 않는 상수, 변수, 함수 및 유형을 확인
-    - errchkjson # bugs  : json 인코딩 함수에 전달된 유형을 확인. 오류검사 생략 가능 체크
-    - errname # style : 센티넬 오류가 접두사로 Err붙고 오류 유형이 접미사로 붙는지 확인합니다
-    - errorlint # bugs  : Go 1.13에 도입된 오류 래핑 체계에 문제를 일으킬 코드를 찾는 데 사용
-    - goconst # style : 상수로 대체 될 수있는 반복 된 문자열을 찾습니다.
-    - gocritic # style : 형식, 성능, 오류감지 복합
-    - misspell
-    - predeclared # style : Go의 미리 선언된 식별자( new, make, append uint등) 중 하나를 재정의하는 코드를 찾습니다.
-    - unconvert # style : 불필요한 형변환 검사
-    - wastedassign # style : 낭비 된 할당 문을 찾습니다.
-    - whitespace # style : 선행 및 후행 공백 감지를 위한 도구
-    - contextcheck # bugs  : 상속되지 않은 컨텍스트를 사용하는지 여부 확인
-    # - gofmt # style : gosimple을 포함한 Code 형식 검사
-    # - dupl # style : 중복코드 확인
-    # - wrapcheck # error : 외부 패키지에서 반환된 오류가 래핑되는지 확인합니다.
-    - godox # style : FIXME, TODO 및 기타 주석 키워드의 탐지
-    # - goimports # gofmt와 동일한 스타일로 코드의 형식을 지정
-
-# output configuration options
 output:
-  # Format: colored-line-number|line-number|json|tab|checkstyle|code-climate|junit-xml|github-actions
   format: colored-line-number
   print-issued-lines: true
   print-linter-name: true
   uniq-by-line: true
   sort-results: true
-
-# All available settings of specific linters.
 linters-settings:
-  errcheck:
-    exclude-functions:
-      - (github.com/cloudevents/sdk-go/v2/event.Event).DataAs
-      - (github.com/cloudevents/sdk-go/v2/event.Event).SetData
-      - github.com/prometheus/client_golang/prometheus.Register
-      - (*github.com/spf13/cobra.Command).MarkFlagRequired
+  godot:
+    scope: all
   gofmt:
-    simplify: true
+    simplify: false
   revive:
     severity: warning
     rules:
@@ -89,7 +49,7 @@ linters-settings:
       - name: defer
         disabled: false
         arguments:
-          - ['call-chain', 'loop', 'method-call', 'recover', 'return']
+          - ["call-chain", "loop", "method-call", "recover", "return"]
       # <https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#dot-imports>
       - name: dot-imports
         disabled: false
@@ -158,7 +118,7 @@ linters-settings:
         disabled: false
       # <https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#var-naming>
       - name: var-naming
-        disabled: true
+        disabled: false
       # <https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unexported-naming>
       - name: unexported-naming
         disabled: false
@@ -180,20 +140,49 @@ linters-settings:
   staticcheck:
     checks:
       - all
-      - '-SA9004' # <https://staticcheck.io/docs/checks#SA9004>
-  # See the dedicated "linters-settings" documentation section.
+      - "-SA9004" # <https://staticcheck.io/docs/checks#SA9004>
   gocritic:
     disabled-checks:
       - exitAfterDefer # panic is required when examines config
-    enabled-tags:
-#      - diagnostic
-#      - style
-#      - performance
-#      - experimental
-#      - opinionated
+linters:
+  enable:
+    - errcheck # checks unchecked errors
+    - gosimple # simplify code
+    - govet # examines Go source code and reports suspicious constructs
+    - ineffassign # detect unused assign
+    - staticcheck # cover Go vet edge cases
+    - typecheck # type-checks Go code
+    - unused # checks Go code for unused constants, variables, functions and types
+    - bidichk # checks for dangerous unicode character sequences
+    - bodyclose # checks whether HTTP response body is closed successfully
+    - contextcheck # check the function whether use a non-inherited context
+    - dupl # code clone detection
+    - durationcheck # check for two durations multiplied together
+    - errname # checks that sentinel errors are prefixed with the Err and error types are suffixed with the Error
+    - errorlint # find code that will cause problems with the error wrapping scheme
+    - exportloopref # checks for pointers to enclosing loop variables
+    - goconst # finds repeated strings that could be replaced by a constant
+    - gocritic # provides diagnostics that check for bugs, performance and style issues
+    - godot # check if comments end in a period
+    - gofmt # checks whether code was gofmt-ed
+    - goimports # fix imports, formats your code in the same style as gofmt
+    - ifshort # checks that your code uses short syntax for if-statements whenever possible
+    - misspell # finds commonly misspelled English words in comments
+    - noctx # finds sending http request without context.Context
+    - predeclared # find code that shadows one of Go's predeclared identifiers
+    - revive # replacement of golint
+    - rowserrcheck # checks whether Err of rows is checked successfully
+    - sqlclosecheck # checks that sql.Rows and sql.Stmt are closed.
+    - unconvert # remove unnecessary type conversions
+    - wastedassign # finds wasted assignment statements.
+    - whitespace # tool for detection of leading and trailing whitespace
+    - wrapcheck # check that errors from external packages are wrapped during return to help identify the error source.
 
+  disable:
+    - deadcode # enabled-default. but duplicated & deprecated someday
+    - structcheck # enabled-default. but duplicated & deprecated someday
+    - varcheck # enabled-default. but duplicated & deprecated someday
+issues:
+  exclude: []
 severity:
   default-severity: warning
-  case-sensitive: true
-
-issues:

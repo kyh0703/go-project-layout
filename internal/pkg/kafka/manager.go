@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/kyh0703/go-project-layout/internal/domain/vo/event"
-	"github.com/kyh0703/go-project-layout/pkg/eventhandler"
+	"github.com/kyh0703/go-project-layout/internal/app/domain/vo/event"
+	"github.com/kyh0703/go-project-layout/internal/pkg/eventhandler"
 
 	cloud "github.com/cloudevents/sdk-go/v2"
 )
