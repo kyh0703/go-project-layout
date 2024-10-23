@@ -8,7 +8,7 @@ import (
 
 func NewConfig(vars *Vars) (*Config, error) {
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("configs")
+	viper.AddConfigPath(".")
 	viper.SetConfigFile(fmt.Sprintf("%s.yaml", vars.Profile))
 
 	err := viper.ReadInConfig()
