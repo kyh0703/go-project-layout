@@ -1,0 +1,13 @@
+version: "2"
+cloud:
+    organization: ""
+    project: ""
+    hostname: ""
+servers: []
+sql:
+    - engine: 'postgresql'
+overrides:
+    go: null
+plugins: []
+rules: []
+options: {}
