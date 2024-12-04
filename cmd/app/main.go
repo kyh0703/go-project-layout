@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/kyh0703/go-project-layout/configs"
-	"github.com/kyh0703/go-project-layout/internal/app/presenter"
 	"go.uber.org/fx"
 )
 
@@ -14,6 +13,5 @@ import (
 func main() {
 	fx.New(
 		configs.Module,
-		presenter.Module,
 	).Run()
 }

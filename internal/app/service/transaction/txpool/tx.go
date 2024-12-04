@@ -9,7 +9,6 @@ import (
 	"github.com/kyh0703/go-project-layout/internal/app/service/transaction/dto"
 )
 
-// Transaction is an call transaction.
 type Tx struct {
 	id     string
 	time   time.Time
