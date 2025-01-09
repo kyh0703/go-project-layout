@@ -92,7 +92,6 @@ func (m *Manager) Close() {
 	m.wg.Wait()
 }
 
-// Register register event listener.
 func (m *Manager) Register(id string, l eventhandler.Listener) {
 	m.lock.Lock()
 	defer m.lock.Unlock()
@@ -144,7 +143,6 @@ func (m *Manager) Consume(_ context.Context, ce cloud.Event) {
 	subject.Notify(ce)
 }
 
-// ProduceEvent send the call event to kafka.
 func (m *Manager) Produce(events ...event.Event) {
 	for _, e := range events {
 		ce := cloud.NewEvent()
@@ -165,7 +163,6 @@ func (m *Manager) Produce(events ...event.Event) {
 	}
 }
 
-// print is a loop to print the event from kafka.
 func (m *Manager) print() {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
@@ -196,7 +193,6 @@ func (m *Manager) print() {
 	log.Print(string(b))
 }
 
-// poll is a loop to poll the event from kafka.
 func (m *Manager) poll() {
 	m.wg.Add(1)
 	defer m.wg.Done()
