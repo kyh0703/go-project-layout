@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"github.com/kyh0703/go-project-layout/internal/app/service/auth/dto"
+	"github.com/kyh0703/layout/internal/core/service/auth/dto"
 )
 
 type Service interface {

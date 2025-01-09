@@ -1,7 +1,7 @@
 ############################
 # STEP 1 build executable binary
 ############################
-FROM golang:1.21-alpine AS build
+FROM golang:1.23-alpine AS build
 
 # Install git + SSL ca certificates.
 ## Git is required for fetching the dependencies.
@@ -37,7 +37,7 @@ RUN go mod download
 RUN go mod verify
 
 # Build the binary.
-RUN go build -a -ldflags="-w -s" -o goapp .
+RUN go build -a -ldflags="-w -s" -o layout .
 
 ############################
 # STEP 2 build a small image
@@ -57,4 +57,4 @@ COPY --from=build /go-app .
 EXPOSE 8080
 
 # Run the binary.
-ENTRYPOINT ["./goapp"]
+ENTRYPOINT ["./layout"]

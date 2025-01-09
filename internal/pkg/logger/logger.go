@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kyh0703/go-project-layout/configs"
+	"github.com/kyh0703/layout/configs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
+
+var Zap *Sugared
 
 type Sugared struct {
 	*zap.SugaredLogger
 }
 
-var Zap *zap.SugaredLogger
-
-func New(config *configs.Config) *zap.SugaredLogger {
+func New(config *configs.Config) *Sugared {
 	level := zap.InfoLevel
 	if config.App.LogLevel != "" {
 		levelFromEnv, err := zapcore.ParseLevel(config.App.LogLevel)
@@ -61,7 +61,13 @@ func New(config *configs.Config) *zap.SugaredLogger {
 		InitialFields: map[string]interface{}{},
 	}
 
-	Zap = zap.Must(zapConfig.Build()).Sugar()
+	Zap = &Sugared{
+		zap.Must(zapConfig.Build()).Sugar(),
+	}
 
 	return Zap
+}
+
+func (l *Sugared) Printf(format string, args ...interface{}) {
+	l.Infof(format, args...)
 }

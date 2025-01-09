@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/kyh0703/go-project-layout/configs"
-	"github.com/kyh0703/go-project-layout/internal/app/service/transaction/dto"
+	"github.com/kyh0703/layout/configs"
+	"github.com/kyh0703/layout/internal/core/service/transaction/dto"
 )
 
 type Tx struct {

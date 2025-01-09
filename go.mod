@@ -1,4 +1,4 @@
-module github.com/kyh0703/go-project-layout
+module github.com/kyh0703/layout
 
 go 1.22
 

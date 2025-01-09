@@ -2,7 +2,7 @@ package cache
 
 import (
 	"github.com/go-redis/redis"
-	"github.com/kyh0703/go-project-layout/configs"
+	"github.com/kyh0703/layout/configs"
 )
 
 var client *redis.Client
