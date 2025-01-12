@@ -27,7 +27,7 @@ dep:
 build: dep
 	@echo "build:"
 	@GO_PRIVATE=$(PRIVATE_REPO) GO111MODULE=on CGO_ENABLED=0 \
-		$(GO) build -ldflags "$(LDFLAGS)" -o $(BUILD_BIN)/$(TARGET) ./cmd/app
+		$(GO) build -ldflags "$(LDFLAGS)" -o $(BUILD_BIN)/$(TARGET) ./cmd/layout
 	@echo ""
 
 .PHONY: run

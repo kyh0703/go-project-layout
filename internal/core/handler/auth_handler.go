@@ -1,10 +1,14 @@
-package auth
+package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
 )
 
 type authHandler struct{}
+
+func NewAuthHandler() *authHandler {
+	return &authHandler{}
+}
 
 func (h *authHandler) Whoami(c *fiber.Ctx) error {
 	user := c.Locals("user")

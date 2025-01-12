@@ -10,11 +10,8 @@ import (
 	"go.uber.org/fx"
 )
 
-func invoke(
-	lc fx.Lifecycle,
-	perfSvr *PerfServer,
-) {
-	app := NewApp(perfSvr)
+func invoke(lc fx.Lifecycle) {
+	app := NewApp()
 	lc.Append(fx.Hook{
 		OnStart: app.Run,
 		OnStop:  app.Stop,
@@ -29,7 +26,6 @@ func invoke(
 func main() {
 	app := fx.New(
 		configs.Module,
-		NewPerfServer(),
 		fx.Invoke(invoke),
 	)
 

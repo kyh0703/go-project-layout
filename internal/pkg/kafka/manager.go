@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/kyh0703/layout/internal/core/domain/vo/event"
+	"github.com/kyh0703/layout/internal/core/domain/event"
 	"github.com/kyh0703/layout/internal/pkg/eventhandler"
 
 	cloud "github.com/cloudevents/sdk-go/v2"
