@@ -7,11 +7,12 @@ import (
 	"syscall"
 
 	"github.com/kyh0703/layout/configs"
+	"github.com/kyh0703/layout/internal/core/handler"
 	"go.uber.org/fx"
 )
 
-func invoke(lc fx.Lifecycle) {
-	app := NewApp()
+func invoke(lc fx.Lifecycle, handlers []handler.Handler) {
+	app := NewApp(handlers)
 	lc.Append(fx.Hook{
 		OnStart: app.Run,
 		OnStop:  app.Stop,
@@ -26,6 +27,7 @@ func invoke(lc fx.Lifecycle) {
 func main() {
 	app := fx.New(
 		configs.Module,
+		fx.Provide(handler.HandlerModule),
 		fx.Invoke(invoke),
 	)
 
