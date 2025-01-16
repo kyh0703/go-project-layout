@@ -2,9 +2,13 @@ package handler
 
 import "github.com/gofiber/fiber/v2"
 
+type SubFlowHandler interface {
+	Handler
+}
+
 type subFlowHandler struct{}
 
-func NewSubFlowHandler() Handler {
+func NewSubFlowHandler() SubFlowHandler {
 	return &subFlowHandler{}
 }
 

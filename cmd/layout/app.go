@@ -8,18 +8,15 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/kyh0703/layout/internal/core/handler"
 )
 
 type app struct {
-	fiber    *fiber.App
-	handlers []handler.Handler
+	fiber *fiber.App
 }
 
-func NewApp(handlers []handler.Handler) *app {
+func NewApp(fiber *fiber.App) *app {
 	return &app{
-		fiber:    fiber.New(),
-		handlers: handlers,
+		fiber: fiber,
 	}
 }
 

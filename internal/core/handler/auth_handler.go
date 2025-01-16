@@ -4,9 +4,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type AuthHandler interface {
+	Handler
+}
+
 type authHandler struct{}
 
-func NewAuthHandler() Handler {
+func NewAuthHandler() AuthHandler {
 	return &authHandler{}
 }
 

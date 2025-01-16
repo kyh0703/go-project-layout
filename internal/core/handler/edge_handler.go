@@ -2,9 +2,13 @@ package handler
 
 import "github.com/gofiber/fiber/v2"
 
+type EdgeHandler interface {
+	Handler
+}
+
 type edgeHandler struct{}
 
-func NewEdgeHandler() Handler {
+func NewEdgeHandler() EdgeHandler {
 	return &edgeHandler{}
 }
 

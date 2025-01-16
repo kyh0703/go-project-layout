@@ -2,9 +2,13 @@ package handler
 
 import "github.com/gofiber/fiber/v2"
 
+type NodeHandler interface {
+	Handler
+}
+
 type nodeHandler struct{}
 
-func NewNodeHandler() Handler {
+func NewNodeHandler() NodeHandler {
 	return &nodeHandler{}
 }
 

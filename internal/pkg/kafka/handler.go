@@ -30,7 +30,7 @@ type Handler struct {
 	isDone  bool
 
 	onCallTerminate  EventFunc
-	onCallDisconncet EventFunc
+	onCallDisconnect EventFunc
 	onSipAlert       EventFunc
 	onSipConnect     EventFunc
 	onSipRelease     EventFunc
@@ -39,7 +39,6 @@ type Handler struct {
 	onSipSwitch      EventFunc
 	onSipHeld        EventFunc
 	onSipRetrieve    EventFunc
-	onMediaPlaydone  EventFunc
 }
 
 func NewHandler() *Handler {
@@ -57,7 +56,7 @@ func (h *Handler) ID() uuid.UUID {
 }
 
 func (h *Handler) SetOnCallTerminate(f EventFunc)  { h.onCallTerminate = f }
-func (h *Handler) SetOnCallDisconnect(f EventFunc) { h.onCallDisconncet = f }
+func (h *Handler) SetOnCallDisconnect(f EventFunc) { h.onCallDisconnect = f }
 func (h *Handler) SetOnSipAlert(f EventFunc)       { h.onSipAlert = f }
 func (h *Handler) SetOnSipConnect(f EventFunc)     { h.onSipConnect = f }
 func (h *Handler) SetOnSipRelease(f EventFunc)     { h.onSipRelease = f }
@@ -66,7 +65,6 @@ func (h *Handler) SetOnSipJoin(f EventFunc)        { h.onSipJoin = f }
 func (h *Handler) SetOnSipSwitch(f EventFunc)      { h.onSipSwitch = f }
 func (h *Handler) SetOnSipHeld(f EventFunc)        { h.onSipHeld = f }
 func (h *Handler) SetOnSipRetrieve(f EventFunc)    { h.onSipRetrieve = f }
-func (h *Handler) SetOnMediaPlayDone(f EventFunc)  { h.onMediaPlaydone = f }
 
 func (h *Handler) SetTimer(dur time.Duration) {
 	if h.timer == nil {

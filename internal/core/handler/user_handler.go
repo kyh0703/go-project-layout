@@ -2,9 +2,13 @@ package handler
 
 import "github.com/gofiber/fiber/v2"
 
+type UserHandler interface {
+	Handler
+}
+
 type userHandler struct{}
 
-func NewUserHandler() Handler {
+func NewUserHandler() UserHandler {
 	return &userHandler{}
 }
 

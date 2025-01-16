@@ -7,10 +7,10 @@ import (
 var HandlerModule = fx.Module(
 	"handler",
 	fx.Provide(
-		AsRoute(NewAuthHandler),
-		AsRoute(NewEdgeHandler),
-		AsRoute(NewNodeHandler),
-		AsRoute(NewSubFlowHandler),
-		AsRoute(NewUserHandler),
+		AsHandler(NewAuthHandler),
+		AsHandler(NewEdgeHandler),
+		AsHandler(NewNodeHandler),
+		AsHandler(NewSubFlowHandler),
+		AsHandler(NewUserHandler),
 	),
 )

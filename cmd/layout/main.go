@@ -6,13 +6,14 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/kyh0703/layout/configs"
 	"github.com/kyh0703/layout/internal/core/handler"
 	"go.uber.org/fx"
 )
 
-func invoke(lc fx.Lifecycle, handlers []handler.Handler) {
-	app := NewApp(handlers)
+func invoke(lc fx.Lifecycle, fiber *fiber.App) {
+	app := NewApp(fiber)
 	lc.Append(fx.Hook{
 		OnStart: app.Run,
 		OnStop:  app.Stop,
@@ -27,7 +28,10 @@ func invoke(lc fx.Lifecycle, handlers []handler.Handler) {
 func main() {
 	app := fx.New(
 		configs.Module,
-		fx.Provide(handler.HandlerModule),
+		handler.HandlerModule,
+		fx.Provide(
+			fx.Annotate(NewFiber, fx.ParamTags(`group:"handlers"`)),
+		),
 		fx.Invoke(invoke),
 	)
 

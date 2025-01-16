@@ -15,11 +15,11 @@ type Handler interface {
 	Table() []Mapping
 }
 
-func AsRoute(f any) any {
+func AsHandler(f any) any {
 	return fx.Annotate(
 		f,
 		fx.As(new(Handler)),
-		fx.ResultTags(`group:"handler"`),
+		fx.ResultTags(`group:"watchers"`),
 	)
 }
 
