@@ -1,13 +1,9 @@
 version: "2"
-cloud:
-    organization: ""
-    project: ""
-    hostname: ""
-servers: []
 sql:
-    - engine: 'postgresql'
-overrides:
-    go: null
-plugins: []
-rules: []
-options: {}
+    - engine: 'sqlite'
+      queries: "query.sql"
+      schema: "schema.sql"
+      gen:
+        go:
+          package: "model"
+          out: "./internal/core/domain/model"
