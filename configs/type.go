@@ -28,6 +28,7 @@ type Sentry struct {
 
 type Server struct {
 	Profile string `mapstructure:"profile"`
+	Port    string `mapstructure:"port"`
 }
 
 type App struct {

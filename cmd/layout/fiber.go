@@ -24,14 +24,28 @@ func setupMiddleware(app *fiber.App) *fiber.App {
 	return app
 }
 
+func setupHandlers(app *fiber.App, handlers ...handler.Handler) *fiber.App {
+	api := app.Group("/api")
+	v1 := api.Group("/v1")
+
+	for _, h := range handlers {
+		for _, m := range h.Table() {
+			v1.Add(m.Method, m.Path, m.Handler)
+		}
+	}
+
+	return app
+}
+
 func NewFiber(handlers ...handler.Handler) *fiber.App {
 	app := fiber.New(fiber.Config{
 		AppName:      "layout",
 		ServerHeader: "layout",
 		Prefork:      false,
 	})
-
 	app.Get("/swagger/*", swagger.HandlerDefault)
+
+	app = setupHandlers(app, handlers...)
 	app = setupMiddleware(app)
 	return app
 }

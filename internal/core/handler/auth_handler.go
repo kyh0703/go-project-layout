@@ -6,6 +6,10 @@ import (
 
 type AuthHandler interface {
 	Handler
+	SignUp(c *fiber.Ctx) error
+	SignIn(c *fiber.Ctx) error
+	SignOut(c *fiber.Ctx) error
+	Refresh(c *fiber.Ctx) error
 }
 
 type authHandler struct{}

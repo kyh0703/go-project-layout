@@ -4,6 +4,10 @@ import "github.com/gofiber/fiber/v2"
 
 type UserHandler interface {
 	Handler
+	CreateOne(c *fiber.Ctx) error
+	GetOne(c *fiber.Ctx) error
+	UpdateOne(c *fiber.Ctx) error
+	DeleteOne(c *fiber.Ctx) error
 }
 
 type userHandler struct{}

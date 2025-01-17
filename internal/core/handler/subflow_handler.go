@@ -4,6 +4,13 @@ import "github.com/gofiber/fiber/v2"
 
 type SubFlowHandler interface {
 	Handler
+	CreateOne(c *fiber.Ctx) error
+	GetOne(c *fiber.Ctx) error
+	DeleteOne(c *fiber.Ctx) error
+	UpdateOne(c *fiber.Ctx) error
+	Capture(c *fiber.Ctx) error
+	Undo(c *fiber.Ctx) error
+	Redo(c *fiber.Ctx) error
 }
 
 type subFlowHandler struct{}
@@ -15,6 +22,7 @@ func NewSubFlowHandler() SubFlowHandler {
 func (h *subFlowHandler) Table() []Mapping {
 	return []Mapping{
 		{Method: fiber.MethodPost, Path: "/subflow", Handler: h.CreateOne},
+		{Method: fiber.MethodGet, Path: "/subflow/:id", Handler: h.GetOne},
 		{Method: fiber.MethodPut, Path: "/subflow/:id", Handler: h.UpdateOne},
 		{Method: fiber.MethodDelete, Path: "/subflow/:id", Handler: h.DeleteOne},
 		{Method: fiber.MethodPost, Path: "/subflow/:id/capture", Handler: h.Capture},
@@ -24,6 +32,10 @@ func (h *subFlowHandler) Table() []Mapping {
 }
 
 func (h *subFlowHandler) CreateOne(c *fiber.Ctx) error {
+	panic("unimplemented")
+}
+
+func (h *subFlowHandler) GetOne(c *fiber.Ctx) error {
 	panic("unimplemented")
 }
 

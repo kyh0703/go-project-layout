@@ -12,8 +12,8 @@ import (
 	"go.uber.org/fx"
 )
 
-func invoke(lc fx.Lifecycle, fiber *fiber.App) {
-	app := NewApp(fiber)
+func invoke(lc fx.Lifecycle, config *configs.Config, fiber *fiber.App) {
+	app := NewApp(config, fiber)
 	lc.Append(fx.Hook{
 		OnStart: app.Run,
 		OnStop:  app.Stop,
