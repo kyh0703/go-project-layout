@@ -11,7 +11,7 @@ import (
 )
 
 const createEdge = `-- name: CreateEdge :one
-INSERT INTO edge (
+INSERT INTO edges (
   id,
   sub_flow_id,
   source,
@@ -66,8 +66,30 @@ func (q *Queries) CreateEdge(ctx context.Context, arg CreateEdgeParams) (Edge, e
 	return i, err
 }
 
+const createFlow = `-- name: CreateFlow :one
+INSERT INTO flows (
+  name,
+  description
+) VALUES (
+  ?, ?
+)
+RETURNING id, name, description
+`
+
+type CreateFlowParams struct {
+	Name        string
+	Description sql.NullString
+}
+
+func (q *Queries) CreateFlow(ctx context.Context, arg CreateFlowParams) (Flow, error) {
+	row := q.db.QueryRowContext(ctx, createFlow, arg.Name, arg.Description)
+	var i Flow
+	err := row.Scan(&i.ID, &i.Name, &i.Description)
+	return i, err
+}
+
 const createNode = `-- name: CreateNode :one
-INSERT INTO node (
+INSERT INTO nodes (
   id,
   sub_flow_id,
   type,
@@ -127,29 +149,34 @@ func (q *Queries) CreateNode(ctx context.Context, arg CreateNodeParams) (Node, e
 }
 
 const createSubFlow = `-- name: CreateSubFlow :one
-INSERT INTO sub_flow (
+INSERT INTO sub_flows (
   name,
   description
 ) VALUES (
   ?, ?
 )
-RETURNING id, name, description
+RETURNING id, flow_id, name, description
 `
 
 type CreateSubFlowParams struct {
 	Name        string
-	Description sql.NullString
+	Description interface{}
 }
 
 func (q *Queries) CreateSubFlow(ctx context.Context, arg CreateSubFlowParams) (SubFlow, error) {
 	row := q.db.QueryRowContext(ctx, createSubFlow, arg.Name, arg.Description)
 	var i SubFlow
-	err := row.Scan(&i.ID, &i.Name, &i.Description)
+	err := row.Scan(
+		&i.ID,
+		&i.FlowID,
+		&i.Name,
+		&i.Description,
+	)
 	return i, err
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO user (
+INSERT INTO users (
   name,
   bio
 ) VALUES (
@@ -171,7 +198,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 const deleteEdge = `-- name: DeleteEdge :exec
-DELETE FROM edge
+DELETE FROM edges
 WHERE id = ?
 `
 
@@ -180,8 +207,18 @@ func (q *Queries) DeleteEdge(ctx context.Context, id interface{}) error {
 	return err
 }
 
+const deleteFlow = `-- name: DeleteFlow :exec
+DELETE FROM flows
+WHERE id = ?
+`
+
+func (q *Queries) DeleteFlow(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFlow, id)
+	return err
+}
+
 const deleteNode = `-- name: DeleteNode :exec
-DELETE FROM node
+DELETE FROM nodes
 WHERE id = ?
 `
 
@@ -191,7 +228,7 @@ func (q *Queries) DeleteNode(ctx context.Context, id interface{}) error {
 }
 
 const deleteSubFlow = `-- name: DeleteSubFlow :exec
-DELETE FROM sub_flow
+DELETE FROM sub_flows
 WHERE id = ?
 `
 
@@ -201,7 +238,7 @@ func (q *Queries) DeleteSubFlow(ctx context.Context, id int64) error {
 }
 
 const deleteUser = `-- name: DeleteUser :exec
-DELETE FROM user
+DELETE FROM users
 WHERE id = ?
 `
 
@@ -211,7 +248,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 const getEdge = `-- name: GetEdge :one
-SELECT id, sub_flow_id, source, target, type, label, hidden, marker_end, points FROM edge
+SELECT id, sub_flow_id, source, target, type, label, hidden, marker_end, points FROM edges
 WHERE id = ? LIMIT 1
 `
 
@@ -232,8 +269,20 @@ func (q *Queries) GetEdge(ctx context.Context, id interface{}) (Edge, error) {
 	return i, err
 }
 
+const getFlow = `-- name: GetFlow :one
+SELECT id, name, description FROM flows
+WHERE id = ? LIMIT 1
+`
+
+func (q *Queries) GetFlow(ctx context.Context, id int64) (Flow, error) {
+	row := q.db.QueryRowContext(ctx, getFlow, id)
+	var i Flow
+	err := row.Scan(&i.ID, &i.Name, &i.Description)
+	return i, err
+}
+
 const getNode = `-- name: GetNode :one
-SELECT id, sub_flow_id, type, parent, position, styles, width, height, hidden, description FROM node
+SELECT id, sub_flow_id, type, parent, position, styles, width, height, hidden, description FROM nodes
 WHERE id = ? LIMIT 1
 `
 
@@ -256,19 +305,24 @@ func (q *Queries) GetNode(ctx context.Context, id interface{}) (Node, error) {
 }
 
 const getSubFlow = `-- name: GetSubFlow :one
-SELECT id, name, description FROM sub_flow
+SELECT id, flow_id, name, description FROM sub_flows
 WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) GetSubFlow(ctx context.Context, id int64) (SubFlow, error) {
 	row := q.db.QueryRowContext(ctx, getSubFlow, id)
 	var i SubFlow
-	err := row.Scan(&i.ID, &i.Name, &i.Description)
+	err := row.Scan(
+		&i.ID,
+		&i.FlowID,
+		&i.Name,
+		&i.Description,
+	)
 	return i, err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, name, bio FROM user
+SELECT id, name, bio FROM users
 WHERE id = ? LIMIT 1
 `
 
@@ -280,7 +334,7 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 }
 
 const listEdges = `-- name: ListEdges :many
-SELECT id, sub_flow_id, source, target, type, label, hidden, marker_end, points FROM edge
+SELECT id, sub_flow_id, source, target, type, label, hidden, marker_end, points FROM edges
 WHERE sub_flow_id = ?
 ORDER BY create_time
 `
@@ -318,8 +372,36 @@ func (q *Queries) ListEdges(ctx context.Context, subFlowID int64) ([]Edge, error
 	return items, nil
 }
 
+const listFlows = `-- name: ListFlows :many
+SELECT id, name, description FROM flows
+ORDER BY name
+`
+
+func (q *Queries) ListFlows(ctx context.Context) ([]Flow, error) {
+	rows, err := q.db.QueryContext(ctx, listFlows)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Flow
+	for rows.Next() {
+		var i Flow
+		if err := rows.Scan(&i.ID, &i.Name, &i.Description); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listNodes = `-- name: ListNodes :many
-SELECT id, sub_flow_id, type, parent, position, styles, width, height, hidden, description FROM node
+SELECT id, sub_flow_id, type, parent, position, styles, width, height, hidden, description FROM nodes
 WHERE sub_flow_id = ?
 ORDER BY create_time
 `
@@ -359,12 +441,13 @@ func (q *Queries) ListNodes(ctx context.Context, subFlowID int64) ([]Node, error
 }
 
 const listSubFlows = `-- name: ListSubFlows :many
-SELECT id, name, description FROM sub_flow
+SELECT id, flow_id, name, description FROM sub_flows
+WHERE flow_id = ?
 ORDER BY name
 `
 
-func (q *Queries) ListSubFlows(ctx context.Context) ([]SubFlow, error) {
-	rows, err := q.db.QueryContext(ctx, listSubFlows)
+func (q *Queries) ListSubFlows(ctx context.Context, flowID int64) ([]SubFlow, error) {
+	rows, err := q.db.QueryContext(ctx, listSubFlows, flowID)
 	if err != nil {
 		return nil, err
 	}
@@ -372,7 +455,12 @@ func (q *Queries) ListSubFlows(ctx context.Context) ([]SubFlow, error) {
 	var items []SubFlow
 	for rows.Next() {
 		var i SubFlow
-		if err := rows.Scan(&i.ID, &i.Name, &i.Description); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.FlowID,
+			&i.Name,
+			&i.Description,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -387,7 +475,7 @@ func (q *Queries) ListSubFlows(ctx context.Context) ([]SubFlow, error) {
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, name, bio FROM user
+SELECT id, name, bio FROM users
 ORDER BY name
 `
 
@@ -415,7 +503,7 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 }
 
 const updateEdge = `-- name: UpdateEdge :exec
-UPDATE edge SET
+UPDATE edges SET
 source = ?,
 target = ?,
 type = ?,
@@ -452,8 +540,27 @@ func (q *Queries) UpdateEdge(ctx context.Context, arg UpdateEdgeParams) error {
 	return err
 }
 
+const updateFlow = `-- name: UpdateFlow :exec
+UPDATE flows SET
+name = ?,
+description = ?
+WHERE id = ?
+RETURNING id, name, description
+`
+
+type UpdateFlowParams struct {
+	Name        string
+	Description sql.NullString
+	ID          int64
+}
+
+func (q *Queries) UpdateFlow(ctx context.Context, arg UpdateFlowParams) error {
+	_, err := q.db.ExecContext(ctx, updateFlow, arg.Name, arg.Description, arg.ID)
+	return err
+}
+
 const updateNode = `-- name: UpdateNode :exec
-UPDATE node SET
+UPDATE nodes SET
 type = ?,
 parent = ?,
 position = ?,
@@ -494,16 +601,16 @@ func (q *Queries) UpdateNode(ctx context.Context, arg UpdateNodeParams) error {
 }
 
 const updateSubFlow = `-- name: UpdateSubFlow :exec
-UPDATE sub_flow SET
+UPDATE sub_flows SET
 name = ?,
 description = ?
 WHERE id = ?
-RETURNING id, name, description
+RETURNING id, flow_id, name, description
 `
 
 type UpdateSubFlowParams struct {
 	Name        string
-	Description sql.NullString
+	Description interface{}
 	ID          int64
 }
 
@@ -513,7 +620,7 @@ func (q *Queries) UpdateSubFlow(ctx context.Context, arg UpdateSubFlowParams) er
 }
 
 const updateUser = `-- name: UpdateUser :exec
-UPDATE user SET
+UPDATE users SET
 name = ?,
 bio = ?
 WHERE id = ?

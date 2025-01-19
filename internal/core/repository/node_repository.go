@@ -7,28 +7,34 @@ import (
 	"github.com/kyh0703/layout/internal/core/domain/repository"
 )
 
-type NodeRepository struct{}
-
-func NewNodeRepository() repository.NodeRepository {
-	return &NodeRepository{}
+type nodeRepository struct {
+	queries *model.Queries
 }
 
-func (n *NodeRepository) CreateOne(ctx context.Context, args model.CreateNodeParams) error {
-	panic("unimplemented")
+func NewNodeRepository(
+	queries *model.Queries,
+) repository.NodeRepository {
+	return &nodeRepository{
+		queries: queries,
+	}
 }
 
-func (n *NodeRepository) FindOne(ctx context.Context, id string) (*model.Node, error) {
-	panic("unimplemented")
+func (n *nodeRepository) CreateOne(ctx context.Context, arg model.CreateNodeParams) (model.Node, error) {
+	return n.queries.CreateNode(ctx, arg)
 }
 
-func (n *NodeRepository) GetList(ctx context.Context, subFlowId int32) ([]*model.Node, error) {
-	panic("unimplemented")
+func (n *nodeRepository) FindOne(ctx context.Context, id string) (model.Node, error) {
+	return n.queries.GetNode(ctx, id)
 }
 
-func (n *NodeRepository) UpdateOne(ctx context.Context, args model.UpdateNodeParams) (*model.Node, error) {
-	panic("unimplemented")
+func (n *nodeRepository) GetList(ctx context.Context, subFlowId int64) ([]model.Node, error) {
+	return n.queries.ListNodes(ctx, subFlowId)
 }
 
-func (n *NodeRepository) DeleteOne(ctx context.Context, id string) error {
-	panic("unimplemented")
+func (n *nodeRepository) UpdateOne(ctx context.Context, arg model.UpdateNodeParams) error {
+	return n.queries.UpdateNode(ctx, arg)
+}
+
+func (n *nodeRepository) DeleteOne(ctx context.Context, id string) error {
+	return n.queries.DeleteNode(ctx, id)
 }

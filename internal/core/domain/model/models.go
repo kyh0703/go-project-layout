@@ -41,8 +41,9 @@ type Node struct {
 
 type SubFlow struct {
 	ID          int64
+	FlowID      int64
 	Name        string
-	Description sql.NullString
+	Description interface{}
 }
 
 type User struct {

@@ -7,28 +7,34 @@ import (
 	"github.com/kyh0703/layout/internal/core/domain/repository"
 )
 
-type EdgeRepository struct{}
-
-func NewEdgeRepository() repository.EdgeRepository {
-	return &EdgeRepository{}
+type edgeRepository struct {
+	queries *model.Queries
 }
 
-func (e *EdgeRepository) CreateOne(ctx context.Context, args model.CreateEdgeParams) error {
-	panic("unimplemented")
+func NewEdgeRepository(
+	queries *model.Queries,
+) repository.EdgeRepository {
+	return &edgeRepository{
+		queries: queries,
+	}
 }
 
-func (e *EdgeRepository) FindOne(ctx context.Context, id string) (*model.Edge, error) {
-	panic("unimplemented")
+func (e *edgeRepository) CreateOne(ctx context.Context, arg model.CreateEdgeParams) (model.Edge, error) {
+	return e.queries.CreateEdge(ctx, arg)
 }
 
-func (e *EdgeRepository) GetList(ctx context.Context, subFlowId int32) ([]*model.Edge, error) {
-	panic("unimplemented")
+func (e *edgeRepository) FindOne(ctx context.Context, id string) (model.Edge, error) {
+	return e.queries.GetEdge(ctx, id)
 }
 
-func (e *EdgeRepository) UpdateOne(ctx context.Context, args model.UpdateEdgeParams) (*model.Edge, error) {
-	panic("unimplemented")
+func (e *edgeRepository) GetList(ctx context.Context, subFlowID int64) ([]model.Edge, error) {
+	return e.queries.ListEdges(ctx, subFlowID)
 }
 
-func (e *EdgeRepository) DeleteOne(ctx context.Context, id string) error {
-	panic("unimplemented")
+func (e *edgeRepository) UpdateOne(ctx context.Context, arg model.UpdateEdgeParams) error {
+	return e.queries.UpdateEdge(ctx, arg)
+}
+
+func (e *edgeRepository) DeleteOne(ctx context.Context, id string) error {
+	return e.queries.DeleteEdge(ctx, id)
 }

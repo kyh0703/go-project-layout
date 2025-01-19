@@ -1,13 +1,13 @@
 -- name: GetUser :one
-SELECT * FROM user
+SELECT * FROM users
 WHERE id = ? LIMIT 1;
 
 -- name: ListUsers :many
-SELECT * FROM user
+SELECT * FROM users
 ORDER BY name;
 
 -- name: CreateUser :one
-INSERT INTO user (
+INSERT INTO users (
   name,
   bio
 ) VALUES (
@@ -16,26 +16,18 @@ INSERT INTO user (
 RETURNING *;
 
 -- name: UpdateUser :exec
-UPDATE user SET
+UPDATE users SET
 name = ?,
 bio = ?
 WHERE id = ?
 RETURNING *;
 
 -- name: DeleteUser :exec
-DELETE FROM user
+DELETE FROM users
 WHERE id = ?;
 
--- name: GetSubFlow :one
-SELECT * FROM sub_flow
-WHERE id = ? LIMIT 1;
-
--- name: ListSubFlows :many
-SELECT * FROM sub_flow
-ORDER BY name;
-
 -- name: CreateFlow :one
-INSERT INTO flow (
+INSERT INTO flows (
   name,
   description
 ) VALUES (
@@ -43,19 +35,27 @@ INSERT INTO flow (
 )
 RETURNING *;
 
+-- name: GetFlow :one
+SELECT * FROM flows
+WHERE id = ? LIMIT 1;
+
+-- name: ListFlows :many
+SELECT * FROM flows
+ORDER BY name;
+
 -- name: UpdateFlow :exec
-UPDATE flow SET
+UPDATE flows SET
 name = ?,
 description = ?
 WHERE id = ?
 RETURNING *;
 
 -- name: DeleteFlow :exec
-DELETE FROM flow
+DELETE FROM flows
 WHERE id = ?;
 
 -- name: CreateSubFlow :one
-INSERT INTO sub_flow (
+INSERT INTO sub_flows (
   name,
   description
 ) VALUES (
@@ -63,28 +63,37 @@ INSERT INTO sub_flow (
 )
 RETURNING *;
 
+-- name: GetSubFlow :one
+SELECT * FROM sub_flows
+WHERE id = ? LIMIT 1;
+
+-- name: ListSubFlows :many
+SELECT * FROM sub_flows
+WHERE flow_id = ?
+ORDER BY name;
+
 -- name: UpdateSubFlow :exec
-UPDATE sub_flow SET
+UPDATE sub_flows SET
 name = ?,
 description = ?
 WHERE id = ?
 RETURNING *;
 
 -- name: DeleteSubFlow :exec
-DELETE FROM sub_flow
+DELETE FROM sub_flows
 WHERE id = ?;
 
 -- name: GetNode :one
-SELECT * FROM node
+SELECT * FROM nodes
 WHERE id = ? LIMIT 1;
 
 -- name: ListNodes :many
-SELECT * FROM node
+SELECT * FROM nodes
 WHERE sub_flow_id = ?
 ORDER BY create_time;
 
 -- name: CreateNode :one
-INSERT INTO node (
+INSERT INTO nodes (
   id,
   sub_flow_id,
   type,
@@ -101,7 +110,7 @@ INSERT INTO node (
 RETURNING *;
 
 -- name: UpdateNode :exec
-UPDATE node SET
+UPDATE nodes SET
 type = ?,
 parent = ?,
 position = ?,
@@ -114,20 +123,20 @@ WHERE id = ?
 RETURNING *;
 
 -- name: DeleteNode :exec
-DELETE FROM node
+DELETE FROM nodes
 WHERE id = ?;
 
 -- name: GetEdge :one
-SELECT * FROM edge
+SELECT * FROM edges
 WHERE id = ? LIMIT 1;
 
 -- name: ListEdges :many
-SELECT * FROM edge
+SELECT * FROM edges
 WHERE sub_flow_id = ?
 ORDER BY create_time;
 
 -- name: CreateEdge :one
-INSERT INTO edge (
+INSERT INTO edges (
   id,
   sub_flow_id,
   source,
@@ -143,7 +152,7 @@ INSERT INTO edge (
 RETURNING *;
 
 -- name: UpdateEdge :exec
-UPDATE edge SET
+UPDATE edges SET
 source = ?,
 target = ?,
 type = ?,
@@ -155,5 +164,5 @@ WHERE id = ?
 RETURNING *;
 
 -- name: DeleteEdge :exec
-DELETE FROM edge
+DELETE FROM edges
 WHERE id = ?;
