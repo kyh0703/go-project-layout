@@ -10,28 +10,6 @@ import (
 	"database/sql"
 )
 
-const createAuthor = `-- name: CreateAuthor :one
-INSERT INTO user (
-  name,
-  bio
-) VALUES (
-  ?, ?
-)
-RETURNING id, name, bio
-`
-
-type CreateAuthorParams struct {
-	Name string
-	Bio  sql.NullString
-}
-
-func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createAuthor, arg.Name, arg.Bio)
-	var i User
-	err := row.Scan(&i.ID, &i.Name, &i.Bio)
-	return i, err
-}
-
 const createEdge = `-- name: CreateEdge :one
 INSERT INTO edge (
   id,
@@ -167,6 +145,28 @@ func (q *Queries) CreateSubFlow(ctx context.Context, arg CreateSubFlowParams) (S
 	row := q.db.QueryRowContext(ctx, createSubFlow, arg.Name, arg.Description)
 	var i SubFlow
 	err := row.Scan(&i.ID, &i.Name, &i.Description)
+	return i, err
+}
+
+const createUser = `-- name: CreateUser :one
+INSERT INTO user (
+  name,
+  bio
+) VALUES (
+  ?, ?
+)
+RETURNING id, name, bio
+`
+
+type CreateUserParams struct {
+	Name string
+	Bio  sql.NullString
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, createUser, arg.Name, arg.Bio)
+	var i User
+	err := row.Scan(&i.ID, &i.Name, &i.Bio)
 	return i, err
 }
 
@@ -414,25 +414,6 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
-const updateAuthor = `-- name: UpdateAuthor :exec
-UPDATE user SET
-name = ?,
-bio = ?
-WHERE id = ?
-RETURNING id, name, bio
-`
-
-type UpdateAuthorParams struct {
-	Name string
-	Bio  sql.NullString
-	ID   int64
-}
-
-func (q *Queries) UpdateAuthor(ctx context.Context, arg UpdateAuthorParams) error {
-	_, err := q.db.ExecContext(ctx, updateAuthor, arg.Name, arg.Bio, arg.ID)
-	return err
-}
-
 const updateEdge = `-- name: UpdateEdge :exec
 UPDATE edge SET
 source = ?,
@@ -528,5 +509,24 @@ type UpdateSubFlowParams struct {
 
 func (q *Queries) UpdateSubFlow(ctx context.Context, arg UpdateSubFlowParams) error {
 	_, err := q.db.ExecContext(ctx, updateSubFlow, arg.Name, arg.Description, arg.ID)
+	return err
+}
+
+const updateUser = `-- name: UpdateUser :exec
+UPDATE user SET
+name = ?,
+bio = ?
+WHERE id = ?
+RETURNING id, name, bio
+`
+
+type UpdateUserParams struct {
+	Name string
+	Bio  sql.NullString
+	ID   int64
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.ExecContext(ctx, updateUser, arg.Name, arg.Bio, arg.ID)
 	return err
 }

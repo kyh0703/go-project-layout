@@ -4,10 +4,18 @@ CREATE TABLE user (
   bio TEXT
 )
 
-CREATE TABLE sub_flow (
+CREATE TABLE flow (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
   description TEXT
+)
+
+CREATE TABLE sub_flow (
+  id INTEGER PRIMARY KEY,
+  flow_id INTEGER NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT
+  FOREIGN KEY (flow_id) REFERENCES flow(id) ON DELETE CASCADE
 )
 
 CREATE TABLE node (
@@ -21,7 +29,7 @@ CREATE TABLE node (
   height INTEGER,
   hidden INTEGER,
   description TEXT,
-  FOREIGN KEY (sub_flow_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (sub_flow_id) REFERENCES sub_flow(id) ON DELETE CASCADE
 )
 
 CREATE TABLE edge (
@@ -34,5 +42,5 @@ CREATE TABLE edge (
   hidden INTEGER,
   marker_end TEXT,
   points TEXT,
-  FOREIGN KEY (sub_flow_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (sub_flow_id) REFERENCES edge(id) ON DELETE CASCADE
 )

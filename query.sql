@@ -6,7 +6,7 @@ WHERE id = ? LIMIT 1;
 SELECT * FROM user
 ORDER BY name;
 
--- name: CreateAuthor :one
+-- name: CreateUser :one
 INSERT INTO user (
   name,
   bio
@@ -15,7 +15,7 @@ INSERT INTO user (
 )
 RETURNING *;
 
--- name: UpdateAuthor :exec
+-- name: UpdateUser :exec
 UPDATE user SET
 name = ?,
 bio = ?
@@ -33,6 +33,26 @@ WHERE id = ? LIMIT 1;
 -- name: ListSubFlows :many
 SELECT * FROM sub_flow
 ORDER BY name;
+
+-- name: CreateFlow :one
+INSERT INTO flow (
+  name,
+  description
+) VALUES (
+  ?, ?
+)
+RETURNING *;
+
+-- name: UpdateFlow :exec
+UPDATE flow SET
+name = ?,
+description = ?
+WHERE id = ?
+RETURNING *;
+
+-- name: DeleteFlow :exec
+DELETE FROM flow
+WHERE id = ?;
 
 -- name: CreateSubFlow :one
 INSERT INTO sub_flow (

@@ -20,6 +20,12 @@ type Edge struct {
 	Points    sql.NullString
 }
 
+type Flow struct {
+	ID          int64
+	Name        string
+	Description sql.NullString
+}
+
 type Node struct {
 	ID          interface{}
 	SubFlowID   int64

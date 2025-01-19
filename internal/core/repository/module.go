@@ -4,8 +4,8 @@ import "go.uber.org/fx"
 
 var RepositoryModule = fx.Provide(
 	"repository",
-	NewAuthRepository,
-	NewEdgeRepository,
-	NewAuthRepository,
 	NewUserRepository,
+	NewSubFlowRepository,
+	NewNodeRepository,
+	NewEdgeRepository,
 )
