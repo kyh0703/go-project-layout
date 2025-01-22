@@ -27,6 +27,10 @@ func (u *userRepository) FindOne(ctx context.Context, id int64) (model.User, err
 	return u.queries.GetUser(ctx, id)
 }
 
+func (u *userRepository) FindOneByEmail(ctx context.Context, email string) (model.User, error) {
+	return u.queries.GetUserByEmail(ctx, email)
+}
+
 func (u *userRepository) UpdateOne(ctx context.Context, arg model.UpdateUserParams) error {
 	return u.queries.UpdateUser(ctx, arg)
 }

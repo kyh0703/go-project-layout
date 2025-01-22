@@ -1,6 +1,9 @@
 package handler
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/kyh0703/layout/internal/core/domain/repository"
+)
 
 type EdgeHandler interface {
 	Handler
@@ -10,10 +13,16 @@ type EdgeHandler interface {
 	UpdateOne(c *fiber.Ctx) error
 }
 
-type edgeHandler struct{}
+type edgeHandler struct {
+	edgeRepository repository.EdgeRepository
+}
 
-func NewEdgeHandler() EdgeHandler {
-	return &edgeHandler{}
+func NewEdgeHandler(
+	edgeRepository repository.EdgeRepository,
+) EdgeHandler {
+	return &edgeHandler{
+		edgeRepository: edgeRepository,
+	}
 }
 
 func (h *edgeHandler) Table() []Mapping {

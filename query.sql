@@ -2,23 +2,33 @@
 SELECT * FROM users
 WHERE id = ? LIMIT 1;
 
+-- name: GetUserByEmail :one
+SELECT * FROM users
+WHERE email = ? LIMIT 1;
+
 -- name: ListUsers :many
 SELECT * FROM users
 ORDER BY name;
 
 -- name: CreateUser :one
 INSERT INTO users (
+  email,
+  password,
   name,
-  bio
+  bio,
+  update_at
 ) VALUES (
-  ?, ?
+  ?, ?, ?, ?, ?
 )
 RETURNING *;
 
 -- name: UpdateUser :exec
 UPDATE users SET
+email = ?,
 name = ?,
-bio = ?
+password = ?,
+bio = ?,
+update_at = ?
 WHERE id = ?
 RETURNING *;
 

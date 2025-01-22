@@ -24,7 +24,7 @@ INSERT INTO edges (
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
-RETURNING id, sub_flow_id, source, target, type, label, hidden, marker_end, points
+RETURNING id, sub_flow_id, source, target, type, label, hidden, marker_end, points, update_at, create_at
 `
 
 type CreateEdgeParams struct {
@@ -62,6 +62,8 @@ func (q *Queries) CreateEdge(ctx context.Context, arg CreateEdgeParams) (Edge, e
 		&i.Hidden,
 		&i.MarkerEnd,
 		&i.Points,
+		&i.UpdateAt,
+		&i.CreateAt,
 	)
 	return i, err
 }
@@ -73,7 +75,7 @@ INSERT INTO flows (
 ) VALUES (
   ?, ?
 )
-RETURNING id, name, description
+RETURNING id, name, description, update_at, create_at
 `
 
 type CreateFlowParams struct {
@@ -84,7 +86,13 @@ type CreateFlowParams struct {
 func (q *Queries) CreateFlow(ctx context.Context, arg CreateFlowParams) (Flow, error) {
 	row := q.db.QueryRowContext(ctx, createFlow, arg.Name, arg.Description)
 	var i Flow
-	err := row.Scan(&i.ID, &i.Name, &i.Description)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.UpdateAt,
+		&i.CreateAt,
+	)
 	return i, err
 }
 
@@ -103,7 +111,7 @@ INSERT INTO nodes (
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
-RETURNING id, sub_flow_id, type, parent, position, styles, width, height, hidden, description
+RETURNING id, sub_flow_id, type, parent, position, styles, width, height, hidden, description, update_at, create_at
 `
 
 type CreateNodeParams struct {
@@ -144,6 +152,8 @@ func (q *Queries) CreateNode(ctx context.Context, arg CreateNodeParams) (Node, e
 		&i.Height,
 		&i.Hidden,
 		&i.Description,
+		&i.UpdateAt,
+		&i.CreateAt,
 	)
 	return i, err
 }
@@ -155,7 +165,7 @@ INSERT INTO sub_flows (
 ) VALUES (
   ?, ?
 )
-RETURNING id, flow_id, name, description
+RETURNING id, flow_id, name, description, create_at
 `
 
 type CreateSubFlowParams struct {
@@ -171,29 +181,50 @@ func (q *Queries) CreateSubFlow(ctx context.Context, arg CreateSubFlowParams) (S
 		&i.FlowID,
 		&i.Name,
 		&i.Description,
+		&i.CreateAt,
 	)
 	return i, err
 }
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
+  email,
+  password,
   name,
-  bio
+  bio,
+  update_at
 ) VALUES (
-  ?, ?
+  ?, ?, ?, ?, ?
 )
-RETURNING id, name, bio
+RETURNING id, email, password, name, bio, update_at, create_at
 `
 
 type CreateUserParams struct {
-	Name string
-	Bio  sql.NullString
+	Email    string
+	Password string
+	Name     string
+	Bio      sql.NullString
+	UpdateAt sql.NullString
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.Name, arg.Bio)
+	row := q.db.QueryRowContext(ctx, createUser,
+		arg.Email,
+		arg.Password,
+		arg.Name,
+		arg.Bio,
+		arg.UpdateAt,
+	)
 	var i User
-	err := row.Scan(&i.ID, &i.Name, &i.Bio)
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.Name,
+		&i.Bio,
+		&i.UpdateAt,
+		&i.CreateAt,
+	)
 	return i, err
 }
 
@@ -248,7 +279,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 const getEdge = `-- name: GetEdge :one
-SELECT id, sub_flow_id, source, target, type, label, hidden, marker_end, points FROM edges
+SELECT id, sub_flow_id, source, target, type, label, hidden, marker_end, points, update_at, create_at FROM edges
 WHERE id = ? LIMIT 1
 `
 
@@ -265,24 +296,32 @@ func (q *Queries) GetEdge(ctx context.Context, id interface{}) (Edge, error) {
 		&i.Hidden,
 		&i.MarkerEnd,
 		&i.Points,
+		&i.UpdateAt,
+		&i.CreateAt,
 	)
 	return i, err
 }
 
 const getFlow = `-- name: GetFlow :one
-SELECT id, name, description FROM flows
+SELECT id, name, description, update_at, create_at FROM flows
 WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) GetFlow(ctx context.Context, id int64) (Flow, error) {
 	row := q.db.QueryRowContext(ctx, getFlow, id)
 	var i Flow
-	err := row.Scan(&i.ID, &i.Name, &i.Description)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.UpdateAt,
+		&i.CreateAt,
+	)
 	return i, err
 }
 
 const getNode = `-- name: GetNode :one
-SELECT id, sub_flow_id, type, parent, position, styles, width, height, hidden, description FROM nodes
+SELECT id, sub_flow_id, type, parent, position, styles, width, height, hidden, description, update_at, create_at FROM nodes
 WHERE id = ? LIMIT 1
 `
 
@@ -300,12 +339,14 @@ func (q *Queries) GetNode(ctx context.Context, id interface{}) (Node, error) {
 		&i.Height,
 		&i.Hidden,
 		&i.Description,
+		&i.UpdateAt,
+		&i.CreateAt,
 	)
 	return i, err
 }
 
 const getSubFlow = `-- name: GetSubFlow :one
-SELECT id, flow_id, name, description FROM sub_flows
+SELECT id, flow_id, name, description, create_at FROM sub_flows
 WHERE id = ? LIMIT 1
 `
 
@@ -317,24 +358,53 @@ func (q *Queries) GetSubFlow(ctx context.Context, id int64) (SubFlow, error) {
 		&i.FlowID,
 		&i.Name,
 		&i.Description,
+		&i.CreateAt,
 	)
 	return i, err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, name, bio FROM users
+SELECT id, email, password, name, bio, update_at, create_at FROM users
 WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
-	err := row.Scan(&i.ID, &i.Name, &i.Bio)
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.Name,
+		&i.Bio,
+		&i.UpdateAt,
+		&i.CreateAt,
+	)
+	return i, err
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, email, password, name, bio, update_at, create_at FROM users
+WHERE email = ? LIMIT 1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.Name,
+		&i.Bio,
+		&i.UpdateAt,
+		&i.CreateAt,
+	)
 	return i, err
 }
 
 const listEdges = `-- name: ListEdges :many
-SELECT id, sub_flow_id, source, target, type, label, hidden, marker_end, points FROM edges
+SELECT id, sub_flow_id, source, target, type, label, hidden, marker_end, points, update_at, create_at FROM edges
 WHERE sub_flow_id = ?
 ORDER BY create_time
 `
@@ -358,6 +428,8 @@ func (q *Queries) ListEdges(ctx context.Context, subFlowID int64) ([]Edge, error
 			&i.Hidden,
 			&i.MarkerEnd,
 			&i.Points,
+			&i.UpdateAt,
+			&i.CreateAt,
 		); err != nil {
 			return nil, err
 		}
@@ -373,7 +445,7 @@ func (q *Queries) ListEdges(ctx context.Context, subFlowID int64) ([]Edge, error
 }
 
 const listFlows = `-- name: ListFlows :many
-SELECT id, name, description FROM flows
+SELECT id, name, description, update_at, create_at FROM flows
 ORDER BY name
 `
 
@@ -386,7 +458,13 @@ func (q *Queries) ListFlows(ctx context.Context) ([]Flow, error) {
 	var items []Flow
 	for rows.Next() {
 		var i Flow
-		if err := rows.Scan(&i.ID, &i.Name, &i.Description); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.UpdateAt,
+			&i.CreateAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -401,7 +479,7 @@ func (q *Queries) ListFlows(ctx context.Context) ([]Flow, error) {
 }
 
 const listNodes = `-- name: ListNodes :many
-SELECT id, sub_flow_id, type, parent, position, styles, width, height, hidden, description FROM nodes
+SELECT id, sub_flow_id, type, parent, position, styles, width, height, hidden, description, update_at, create_at FROM nodes
 WHERE sub_flow_id = ?
 ORDER BY create_time
 `
@@ -426,6 +504,8 @@ func (q *Queries) ListNodes(ctx context.Context, subFlowID int64) ([]Node, error
 			&i.Height,
 			&i.Hidden,
 			&i.Description,
+			&i.UpdateAt,
+			&i.CreateAt,
 		); err != nil {
 			return nil, err
 		}
@@ -441,7 +521,7 @@ func (q *Queries) ListNodes(ctx context.Context, subFlowID int64) ([]Node, error
 }
 
 const listSubFlows = `-- name: ListSubFlows :many
-SELECT id, flow_id, name, description FROM sub_flows
+SELECT id, flow_id, name, description, create_at FROM sub_flows
 WHERE flow_id = ?
 ORDER BY name
 `
@@ -460,6 +540,7 @@ func (q *Queries) ListSubFlows(ctx context.Context, flowID int64) ([]SubFlow, er
 			&i.FlowID,
 			&i.Name,
 			&i.Description,
+			&i.CreateAt,
 		); err != nil {
 			return nil, err
 		}
@@ -475,7 +556,7 @@ func (q *Queries) ListSubFlows(ctx context.Context, flowID int64) ([]SubFlow, er
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, name, bio FROM users
+SELECT id, email, password, name, bio, update_at, create_at FROM users
 ORDER BY name
 `
 
@@ -488,7 +569,15 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 	var items []User
 	for rows.Next() {
 		var i User
-		if err := rows.Scan(&i.ID, &i.Name, &i.Bio); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.Password,
+			&i.Name,
+			&i.Bio,
+			&i.UpdateAt,
+			&i.CreateAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -512,7 +601,7 @@ hidden = ?,
 marker_end = ?,
 points = ?
 WHERE id = ?
-RETURNING id, sub_flow_id, source, target, type, label, hidden, marker_end, points
+RETURNING id, sub_flow_id, source, target, type, label, hidden, marker_end, points, update_at, create_at
 `
 
 type UpdateEdgeParams struct {
@@ -545,7 +634,7 @@ UPDATE flows SET
 name = ?,
 description = ?
 WHERE id = ?
-RETURNING id, name, description
+RETURNING id, name, description, update_at, create_at
 `
 
 type UpdateFlowParams struct {
@@ -570,7 +659,7 @@ height = ?,
 hidden = ?,
 description = ?
 WHERE id = ?
-RETURNING id, sub_flow_id, type, parent, position, styles, width, height, hidden, description
+RETURNING id, sub_flow_id, type, parent, position, styles, width, height, hidden, description, update_at, create_at
 `
 
 type UpdateNodeParams struct {
@@ -605,7 +694,7 @@ UPDATE sub_flows SET
 name = ?,
 description = ?
 WHERE id = ?
-RETURNING id, flow_id, name, description
+RETURNING id, flow_id, name, description, create_at
 `
 
 type UpdateSubFlowParams struct {
@@ -621,19 +710,32 @@ func (q *Queries) UpdateSubFlow(ctx context.Context, arg UpdateSubFlowParams) er
 
 const updateUser = `-- name: UpdateUser :exec
 UPDATE users SET
+email = ?,
 name = ?,
-bio = ?
+password = ?,
+bio = ?,
+update_at = ?
 WHERE id = ?
-RETURNING id, name, bio
+RETURNING id, email, password, name, bio, update_at, create_at
 `
 
 type UpdateUserParams struct {
-	Name string
-	Bio  sql.NullString
-	ID   int64
+	Email    string
+	Name     string
+	Password string
+	Bio      sql.NullString
+	UpdateAt sql.NullString
+	ID       int64
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.ExecContext(ctx, updateUser, arg.Name, arg.Bio, arg.ID)
+	_, err := q.db.ExecContext(ctx, updateUser,
+		arg.Email,
+		arg.Name,
+		arg.Password,
+		arg.Bio,
+		arg.UpdateAt,
+		arg.ID,
+	)
 	return err
 }

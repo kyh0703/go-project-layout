@@ -18,12 +18,16 @@ type Edge struct {
 	Hidden    sql.NullInt64
 	MarkerEnd sql.NullString
 	Points    sql.NullString
+	UpdateAt  sql.NullString
+	CreateAt  sql.NullString
 }
 
 type Flow struct {
 	ID          int64
 	Name        string
 	Description sql.NullString
+	UpdateAt    sql.NullString
+	CreateAt    sql.NullString
 }
 
 type Node struct {
@@ -37,6 +41,8 @@ type Node struct {
 	Height      sql.NullInt64
 	Hidden      sql.NullInt64
 	Description sql.NullString
+	UpdateAt    sql.NullString
+	CreateAt    sql.NullString
 }
 
 type SubFlow struct {
@@ -44,10 +50,15 @@ type SubFlow struct {
 	FlowID      int64
 	Name        string
 	Description interface{}
+	CreateAt    sql.NullString
 }
 
 type User struct {
-	ID   int64
-	Name string
-	Bio  sql.NullString
+	ID       int64
+	Email    string
+	Password string
+	Name     string
+	Bio      sql.NullString
+	UpdateAt sql.NullString
+	CreateAt sql.NullString
 }

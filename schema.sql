@@ -1,13 +1,19 @@
 CREATE TABLE users (
   id INTEGER PRIMARY KEY,
+  email TEXT NOT NULL,
+  password TEXT NOT NULL,
   name TEXT NOT NULL,
-  bio TEXT
+  bio TEXT,
+  update_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  create_at TEXT DEFAULT CURRENT_TIMESTAMP
 )
 
 CREATE TABLE flows (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
-  description TEXT
+  description TEXT,
+  update_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  create_at TEXT DEFAULT CURRENT_TIMESTAMP
 )
 
 CREATE TABLE sub_flows (
@@ -15,6 +21,8 @@ CREATE TABLE sub_flows (
   flow_id INTEGER NOT NULL,
   name TEXT NOT NULL,
   description TEXT
+  update_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  create_at TEXT DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (flow_id) REFERENCES flows(id) ON DELETE CASCADE
 )
 
@@ -29,6 +37,8 @@ CREATE TABLE nodes (
   height INTEGER,
   hidden INTEGER,
   description TEXT,
+  update_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  create_at TEXT DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (sub_flow_id) REFERENCES sub_flows(id) ON DELETE CASCADE
 )
 
@@ -42,5 +52,7 @@ CREATE TABLE edges (
   hidden INTEGER,
   marker_end TEXT,
   points TEXT,
+  update_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  create_at TEXT DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (sub_flow_id) REFERENCES edges(id) ON DELETE CASCADE
 )
