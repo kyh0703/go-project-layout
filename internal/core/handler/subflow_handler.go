@@ -19,15 +19,15 @@ func NewSubFlowHandler() SubFlowHandler {
 	return &subFlowHandler{}
 }
 
-func (h *subFlowHandler) Table() []Mapping {
-	return []Mapping{
-		{Method: fiber.MethodPost, Path: "/subflow", Handler: h.CreateOne},
-		{Method: fiber.MethodGet, Path: "/subflow/:id", Handler: h.GetOne},
-		{Method: fiber.MethodPut, Path: "/subflow/:id", Handler: h.UpdateOne},
-		{Method: fiber.MethodDelete, Path: "/subflow/:id", Handler: h.DeleteOne},
-		{Method: fiber.MethodPost, Path: "/subflow/:id/capture", Handler: h.Capture},
-		{Method: fiber.MethodPost, Path: "/subflow/:id/undo", Handler: h.Undo},
-		{Method: fiber.MethodPost, Path: "/subflow/:id/redo", Handler: h.Redo},
+func (h *subFlowHandler) Table() []Mapper {
+	return []Mapper{
+		Mapping(fiber.MethodPost, "/subflow", h.CreateOne),
+		Mapping(fiber.MethodGet, "/subflow/:id", h.GetOne),
+		Mapping(fiber.MethodPut, "/subflow/:id", h.UpdateOne),
+		Mapping(fiber.MethodDelete, "/subflow/:id", h.DeleteOne),
+		Mapping(fiber.MethodPost, "/subflow/:id/capture", h.Capture),
+		Mapping(fiber.MethodPost, "/subflow/:id/undo", h.Undo),
+		Mapping(fiber.MethodPost, "/subflow/:id/redo", h.Redo),
 	}
 }
 

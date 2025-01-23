@@ -5,14 +5,22 @@ import (
 	"go.uber.org/fx"
 )
 
-type Mapping struct {
+type Mapper struct {
 	Method  string
 	Path    string
-	Handler func(c *fiber.Ctx) error
+	Handler []fiber.Handler
+}
+
+func Mapping(method, path string, handler ...fiber.Handler) Mapper {
+	return Mapper{
+		Method:  method,
+		Path:    path,
+		Handler: handler,
+	}
 }
 
 type Handler interface {
-	Table() []Mapping
+	Table() []Mapper
 }
 
 func AsHandler(f any) any {

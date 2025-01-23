@@ -25,12 +25,12 @@ func NewEdgeHandler(
 	}
 }
 
-func (h *edgeHandler) Table() []Mapping {
-	return []Mapping{
-		{Method: fiber.MethodPost, Path: "/edge", Handler: h.CreateOne},
-		{Method: fiber.MethodGet, Path: "/edge/:id", Handler: h.GetOne},
-		{Method: fiber.MethodPut, Path: "/edge/:id", Handler: h.UpdateOne},
-		{Method: fiber.MethodDelete, Path: "/edge/:id", Handler: h.DeleteOne},
+func (h *edgeHandler) Table() []Mapper {
+	return []Mapper{
+		Mapping(fiber.MethodPost, "/edge", h.CreateOne),
+		Mapping(fiber.MethodGet, "/edge/:id", h.GetOne),
+		Mapping(fiber.MethodPut, "/edge/:id", h.UpdateOne),
+		Mapping(fiber.MethodDelete, "/edge/:id", h.DeleteOne),
 	}
 }
 

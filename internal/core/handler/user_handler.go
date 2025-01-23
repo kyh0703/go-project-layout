@@ -16,12 +16,12 @@ func NewUserHandler() UserHandler {
 	return &userHandler{}
 }
 
-func (u *userHandler) Table() []Mapping {
-	return []Mapping{
-		{Method: fiber.MethodPost, Path: "/user", Handler: u.CreateOne},
-		{Method: fiber.MethodGet, Path: "/user/:id", Handler: u.GetOne},
-		{Method: fiber.MethodPut, Path: "/user/:id", Handler: u.UpdateOne},
-		{Method: fiber.MethodDelete, Path: "/user/:id", Handler: u.DeleteOne},
+func (u *userHandler) Table() []Mapper {
+	return []Mapper{
+		Mapping(fiber.MethodPost, "/user", u.CreateOne),
+		Mapping(fiber.MethodGet, "/user/:id", u.GetOne),
+		Mapping(fiber.MethodPut, "/user/:id", u.UpdateOne),
+		Mapping(fiber.MethodDelete, "/user/:id", u.DeleteOne),
 	}
 }
 

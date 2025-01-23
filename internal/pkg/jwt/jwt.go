@@ -6,21 +6,25 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func GenerateToken(userId int64, email string, expire time.Time) (string, error) {
+var (
+	AccessTokenExpireDuration  = time.Hour
+	RefreshTokenExpireDuration = time.Hour * 24 * 7
+)
+
+func GenerateToken(email string, expire time.Time) (string, error) {
 	mySigningKey := []byte("AllYourBase")
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": userId,
-		"email":   email,
-		"exp":     expire,
+		"email": email,
+		"exp":   expire,
 	})
 
-	token, err := token.SignedString(mySigningKey)
+	tokenString, err := token.SignedString(mySigningKey)
 	if err != nil {
 		return "", err
 	}
 
-	return token, nil
+	return tokenString, nil
 }
 
 func ParseToken(tokenString string) (jwt.MapClaims, error) {

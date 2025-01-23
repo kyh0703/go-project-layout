@@ -16,12 +16,12 @@ func NewNodeHandler() NodeHandler {
 	return &nodeHandler{}
 }
 
-func (h *nodeHandler) Table() []Mapping {
-	return []Mapping{
-		{Method: fiber.MethodPost, Path: "/node", Handler: h.CreateOne},
-		{Method: fiber.MethodGet, Path: "/node/:id", Handler: h.GetOne},
-		{Method: fiber.MethodPut, Path: "/node/:id", Handler: h.UpdateOne},
-		{Method: fiber.MethodDelete, Path: "/node/:id", Handler: h.DeleteOne},
+func (h *nodeHandler) Table() []Mapper {
+	return []Mapper{
+		Mapping(fiber.MethodPost, "/node", h.CreateOne),
+		Mapping(fiber.MethodGet, "/node/:id", h.GetOne),
+		Mapping(fiber.MethodPut, "/node/:id", h.UpdateOne),
+		Mapping(fiber.MethodDelete, "/node/:id", h.DeleteOne),
 	}
 }
 

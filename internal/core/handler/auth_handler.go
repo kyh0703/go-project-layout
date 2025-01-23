@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/kyh0703/layout/internal/core/middleware"
 )
 
 type AuthHandler interface {
@@ -12,18 +13,24 @@ type AuthHandler interface {
 	Refresh(c *fiber.Ctx) error
 }
 
-type authHandler struct{}
-
-func NewAuthHandler() AuthHandler {
-	return &authHandler{}
+type authHandler struct {
+	authMiddleware middleware.AuthMiddleware
 }
 
-func (h *authHandler) Table() []Mapping {
-	return []Mapping{
-		{Method: fiber.MethodGet, Path: "/auth/whoami", Handler: h.Whoami},
-		{Method: fiber.MethodPost, Path: "/auth/signup", Handler: h.SignUp},
-		{Method: fiber.MethodPost, Path: "/auth/signin", Handler: h.SignIn},
-		{Method: fiber.MethodPost, Path: "/auth/signout", Handler: h.SignOut},
+func NewAuthHandler(
+	authMiddleware middleware.AuthMiddleware,
+) AuthHandler {
+	return &authHandler{
+		authMiddleware: authMiddleware,
+	}
+}
+
+func (h *authHandler) Table() []Mapper {
+	return []Mapper{
+		Mapping(fiber.MethodGet, "/auth/whoami", h.authMiddleware.CurrentUser(), h.Whoami),
+		Mapping(fiber.MethodPost, "/auth/signup", h.SignUp),
+		Mapping(fiber.MethodPost, "/auth/signin", h.SignIn),
+		Mapping(fiber.MethodPost, "/auth/signout", h.SignOut),
 	}
 }
 

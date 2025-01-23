@@ -30,7 +30,7 @@ func setupHandlers(app *fiber.App, handlers ...handler.Handler) *fiber.App {
 
 	for _, h := range handlers {
 		for _, m := range h.Table() {
-			v1.Add(m.Method, m.Path, m.Handler)
+			v1.Add(m.Method, m.Path, m.Handler...)
 		}
 	}
 
