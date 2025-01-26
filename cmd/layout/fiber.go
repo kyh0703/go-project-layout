@@ -8,10 +8,28 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
 	"github.com/kyh0703/layout/internal/core/handler"
+	"github.com/kyh0703/layout/internal/pkg/exception"
 )
+
+func NewFiber(handlers ...handler.Handler) *fiber.App {
+	app := fiber.New(fiber.Config{
+		AppName:      "layout",
+		ServerHeader: "layout",
+		Prefork:      false,
+		UnescapePath: true,
+		ErrorHandler: exception.ErrorHandler,
+	})
+
+	app.Get("/swagger/*", swagger.HandlerDefault)
+
+	app = setupHandlers(app, handlers...)
+	app = setupMiddleware(app)
+	return app
+}
 
 func setupMiddleware(app *fiber.App) *fiber.App {
 	app.Use(cors.New())
+	app.Use(exception.Recover())
 	app.Use(logger.New(logger.Config{
 		Format:     "${time} ${status} - ${method} ${path}\n",
 		TimeFormat: "02-Jan-2006",
@@ -34,18 +52,5 @@ func setupHandlers(app *fiber.App, handlers ...handler.Handler) *fiber.App {
 		}
 	}
 
-	return app
-}
-
-func NewFiber(handlers ...handler.Handler) *fiber.App {
-	app := fiber.New(fiber.Config{
-		AppName:      "layout",
-		ServerHeader: "layout",
-		Prefork:      false,
-	})
-	app.Get("/swagger/*", swagger.HandlerDefault)
-
-	app = setupHandlers(app, handlers...)
-	app = setupMiddleware(app)
 	return app
 }

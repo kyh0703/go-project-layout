@@ -1,7 +1,10 @@
 package handler
 
 import (
+	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
+	"github.com/kyh0703/layout/internal/core/dto"
+	"github.com/kyh0703/layout/internal/core/dto/auth"
 	"github.com/kyh0703/layout/internal/core/middleware"
 )
 
@@ -14,13 +17,16 @@ type AuthHandler interface {
 }
 
 type authHandler struct {
+	validate       *validator.Validate
 	authMiddleware middleware.AuthMiddleware
 }
 
 func NewAuthHandler(
+	validate *validator.Validate,
 	authMiddleware middleware.AuthMiddleware,
 ) AuthHandler {
 	return &authHandler{
+		validate:       validate,
 		authMiddleware: authMiddleware,
 	}
 }
@@ -36,21 +42,49 @@ func (h *authHandler) Table() []Mapper {
 
 func (h *authHandler) Whoami(c *fiber.Ctx) error {
 	user := c.Locals("user")
-	return c.JSON(user)
+	return dto.Response(c, fiber.StatusOK, user)
 }
 
 func (h *authHandler) SignUp(c *fiber.Ctx) error {
-	return nil
+	var signup auth.SignUp
+	if err := c.BodyParser(&signup); err != nil {
+		return fiber.NewError(400, err.Error())
+	}
+
+	if err := h.validate.Struct(signup); err != nil {
+		return fiber.NewError(400, err.Error())
+	}
+
+	return dto.Response(c, fiber.StatusOK, nil)
 }
 
 func (h *authHandler) SignIn(c *fiber.Ctx) error {
-	return nil
-}
+	var signin auth.SignIn
+	if err := c.BodyParser(&signin); err != nil {
+		return fiber.NewError(400, err.Error())
+	}
 
-func (h *authHandler) SignOut(c *fiber.Ctx) error {
-	return nil
+	if err := h.validate.Struct(signin); err != nil {
+		return fiber.NewError(400, err.Error())
+	}
+
+	return dto.Response(c, fiber.StatusOK, nil)
 }
 
 func (h *authHandler) Refresh(c *fiber.Ctx) error {
-	return nil
+	var refresh auth.Refresh
+	if err := c.BodyParser(&refresh); err != nil {
+		return fiber.NewError(400, err.Error())
+	}
+
+	if err := h.validate.Struct(refresh); err != nil {
+		return fiber.NewError(400, err.Error())
+	}
+
+	return dto.Response(c, fiber.StatusOK, nil)
+}
+
+func (h *authHandler) SignOut(c *fiber.Ctx) error {
+	c.ClearCookie()
+	return dto.Response(c, fiber.StatusOK, nil)
 }
