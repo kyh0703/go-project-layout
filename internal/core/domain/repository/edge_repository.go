@@ -8,8 +8,7 @@ import (
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
-// counterfeiter:generate . EdgeRepository
-
+//counterfeiter:generate . EdgeRepository
 type EdgeRepository interface {
 	CreateOne(ctx context.Context, arg model.CreateEdgeParams) (model.Edge, error)
 	FindOne(ctx context.Context, id string) (model.Edge, error)

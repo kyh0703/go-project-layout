@@ -6,8 +6,7 @@ import (
 	"github.com/kyh0703/layout/internal/core/domain/model"
 )
 
-// counterfeiter:generate . SubFlowRepository
-
+//counterfeiter:generate . SubFlowRepository
 type SubFlowRepository interface {
 	CreateOne(ctx context.Context, arg model.CreateSubFlowParams) (model.SubFlow, error)
 	FindOne(ctx context.Context, id int64) (model.SubFlow, error)
