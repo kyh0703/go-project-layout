@@ -6,10 +6,12 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/kyh0703/layout/configs"
 	"github.com/kyh0703/layout/internal/core/handler"
+	"github.com/kyh0703/layout/internal/core/middleware"
+	"github.com/kyh0703/layout/internal/core/repository"
+	"github.com/kyh0703/layout/internal/pkg"
 	"go.uber.org/fx"
 )
 
@@ -29,8 +31,10 @@ func invoke(lc fx.Lifecycle, config *configs.Config, fiber *fiber.App) {
 func main() {
 	app := fx.New(
 		configs.Module,
+		pkg.Module,
+		repository.Module,
+		middleware.Module,
 		handler.HandlerModule,
-		fx.Provide(validator.New()),
 		fx.Provide(
 			fx.Annotate(NewFiber, fx.ParamTags(`group:"handlers"`)),
 		),

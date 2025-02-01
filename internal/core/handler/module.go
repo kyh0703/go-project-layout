@@ -8,9 +8,7 @@ var HandlerModule = fx.Module(
 	"handler",
 	fx.Provide(
 		AsHandler(NewAuthHandler),
-		AsHandler(NewEdgeHandler),
-		AsHandler(NewNodeHandler),
-		AsHandler(NewSubFlowHandler),
+		AsHandler(NewPostHandler),
 		AsHandler(NewUserHandler),
 	),
 )

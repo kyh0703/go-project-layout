@@ -8,49 +8,14 @@ import (
 	"database/sql"
 )
 
-type Edge struct {
-	ID        interface{}
-	SubFlowID int64
-	Source    int64
-	Target    int64
-	Type      string
-	Label     sql.NullString
-	Hidden    sql.NullInt64
-	MarkerEnd sql.NullString
-	Points    sql.NullString
-	UpdateAt  sql.NullString
-	CreateAt  sql.NullString
-}
-
-type Flow struct {
-	ID          int64
-	Name        string
-	Description sql.NullString
-	UpdateAt    sql.NullString
-	CreateAt    sql.NullString
-}
-
-type Node struct {
-	ID          interface{}
-	SubFlowID   int64
-	Type        string
-	Parent      sql.NullString
-	Position    sql.NullString
-	Styles      sql.NullString
-	Width       sql.NullInt64
-	Height      sql.NullInt64
-	Hidden      sql.NullInt64
-	Description sql.NullString
-	UpdateAt    sql.NullString
-	CreateAt    sql.NullString
-}
-
-type SubFlow struct {
-	ID          int64
-	FlowID      int64
-	Name        string
-	Description interface{}
-	CreateAt    sql.NullString
+type Post struct {
+	ID       int64
+	UserID   int64
+	Title    string
+	Body     sql.NullString
+	Tags     sql.NullString
+	UpdateAt sql.NullString
+	CreateAt interface{}
 }
 
 type User struct {
