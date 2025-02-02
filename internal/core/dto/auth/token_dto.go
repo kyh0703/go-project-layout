@@ -1,10 +1,10 @@
 package auth
 
 type Token struct {
-	UserID        int64  `json:"user_id"`
-	TokenType     string `json:"token_type"`
-	AccessToken   string `json:"access_token"`
-	AccessExpire  int64  `json:"access_expire"`
-	RefreshToken  string `json:"refresh_token"`
-	RefreshExpire int64  `json:"refresh_expire"`
+	UserID           int64  `json:"userId"`
+	TokenType        string `json:"tokenType"`
+	AccessToken      string `json:"accessToken"`
+	AccessExpiresIn  int64  `json:"accessExpiresIn"`
+	RefreshToken     string `json:"refreshToken"`
+	RefreshExpiresIn int64  `json:"refreshExpiresIn"`
 }

@@ -82,10 +82,10 @@ func (a *authService) SignIn(ctx context.Context, req *auth.SignIn) (*auth.Token
 	// TODO Save
 
 	return &auth.Token{
-		AccessToken:   accessToken,
-		AccessExpire:  accessExpire.Unix(),
-		RefreshToken:  refreshToken,
-		RefreshExpire: refreshExpire.Unix(),
+		AccessToken:      accessToken,
+		AccessExpiresIn:  accessExpire.Unix(),
+		RefreshToken:     refreshToken,
+		RefreshExpiresIn: refreshExpire.Unix(),
 	}, nil
 }
 
